@@ -32,7 +32,7 @@ public abstract class SearchAgent {
 			
 			Iterable<SearchTreeNode> nodesToAdd = problem.expand(nodeToCheck.get());
 			searchStrategy.addNodes(nodesToAdd);
-			
+				
 			count++;
 		}
 		
