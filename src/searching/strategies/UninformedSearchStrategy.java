@@ -1,3 +1,3 @@
 package searching.strategies;
 
-public interface UninformedSearchStrategy extends SearchStrategy {}
+public abstract class UninformedSearchStrategy extends SearchStrategy {}

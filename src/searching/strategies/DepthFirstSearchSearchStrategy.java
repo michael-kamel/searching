@@ -8,16 +8,11 @@ import java.util.Stack;
 import searching.problems.SearchAction;
 import searching.problems.SearchState;
 
-public class DepthFirstSearchSearchStrategy implements UninformedSearchStrategy {
+public class DepthFirstSearchSearchStrategy extends UninformedSearchStrategy {
 	private final Stack<SearchTreeNode> stack;
 	
 	public DepthFirstSearchSearchStrategy() {
 		this.stack = new Stack<SearchTreeNode>();
-	}
-	
-	@Override
-	public void addNodes(Iterable<SearchTreeNode> nodes) {
-		nodes.forEach(this::addNode);
 	}
 
 	@Override

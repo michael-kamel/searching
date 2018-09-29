@@ -4,17 +4,11 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
 
-public class BreadthFirstSearchStrategy implements UninformedSearchStrategy {
-
+public class BreadthFirstSearchStrategy extends UninformedSearchStrategy {
 	private final Queue<SearchTreeNode> queue;
 	
 	public BreadthFirstSearchStrategy() {
 		this.queue = new LinkedList<SearchTreeNode>();
-	}
-	
-	@Override
-	public void addNodes(Iterable<SearchTreeNode> nodes) {
-		nodes.forEach(this::addNode);
 	}
 
 	@Override
@@ -22,7 +16,7 @@ public class BreadthFirstSearchStrategy implements UninformedSearchStrategy {
 		queue.add(node);
 	}
 
-	@Override
+	@Override 
 	public Optional<SearchTreeNode> getNext() {
 		SearchTreeNode node = queue.poll();
 		if(node == null)

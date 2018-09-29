@@ -5,7 +5,7 @@ import java.util.Optional;
 import searching.problems.SearchAction;
 import searching.problems.SearchState;
 
-public class SearchTreeNode {
+public class SearchTreeNode implements Comparable<SearchTreeNode> {
 	private final Optional<SearchTreeNode> parent; // The parent of the node in the tree
 	private final int cost; // The cost from the root of the tree up to this node
 	private final SearchState state; // The current state of the node
@@ -38,6 +38,11 @@ public class SearchTreeNode {
 	
 	public int getDepth() {
 		return depth;
+	}
+
+	@Override
+	public int compareTo(SearchTreeNode node) {
+		return this.cost < node.cost ? 1 : this.cost == node.cost ? 0 : -1;
 	}
 	
 }
