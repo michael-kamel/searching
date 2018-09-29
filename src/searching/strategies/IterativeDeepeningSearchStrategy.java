@@ -3,18 +3,20 @@ package searching.strategies;
 import java.util.Optional;
 import java.util.Stack;
 
-public class IterativeDeepeningSearchStrategy extends UninformedSearchStrategy {
-	private final Stack<SearchTreeNode> stack;
+import searching.problems.SearchState;
+
+public class IterativeDeepeningSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {
+	private final Stack<SearchTreeNode<T>> stack;
 	private int currentMaxDepth = 0;
 	private boolean addedFirstNode = false;
-	private SearchTreeNode rootNode;
+	private SearchTreeNode<T> rootNode;
 	
 	public IterativeDeepeningSearchStrategy() {
-		this.stack = new Stack<SearchTreeNode>();
+		this.stack = new Stack<SearchTreeNode<T>>();
 	}
 
 	@Override
-	public void addNode(SearchTreeNode node) {
+	public void addNode(SearchTreeNode<T> node) {
 		if(!addedFirstNode) {
 			rootNode = node;
 			addedFirstNode = true;
@@ -31,7 +33,7 @@ public class IterativeDeepeningSearchStrategy extends UninformedSearchStrategy {
 	}
 
 	@Override
-	public Optional<SearchTreeNode> getNext() {
+	public Optional<SearchTreeNode<T>> getNext() {
 		if(stack.isEmpty())
 			return Optional.empty();
 		

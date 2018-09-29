@@ -3,21 +3,23 @@ package searching.strategies;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
-public class UniformCostSearchStrategy extends UninformedSearchStrategy {
-	private final PriorityQueue<SearchTreeNode> queue;
+import searching.problems.SearchState;
+
+public class UniformCostSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {
+	private final PriorityQueue<SearchTreeNode<T>> queue;
 	
 	public UniformCostSearchStrategy() {
-		this.queue = new PriorityQueue<SearchTreeNode>();
+		this.queue = new PriorityQueue<SearchTreeNode<T>>();
 	}
 	
 	@Override
-	public void addNode(SearchTreeNode node) {
+	public void addNode(SearchTreeNode<T> node) {
 		queue.add(node);
 	}
 
 	@Override
-	public Optional<SearchTreeNode> getNext() {
-		SearchTreeNode head = queue.poll();
+	public Optional<SearchTreeNode<T>> getNext() {
+		SearchTreeNode<T> head = queue.poll();
 		if(head == null)
 			return Optional.empty();
 		

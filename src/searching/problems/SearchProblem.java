@@ -1,33 +1,47 @@
 package searching.problems;
 
-import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.function.Consumer;
 
+import searching.exceptions.SearchProblemException;
 import searching.strategies.SearchTreeNode;
 
-public abstract class SearchProblem {
-	private final GoalTest goalTest;
-	private final SearchState initialState;
-	private final Enumeration<SearchAction> possibleActions;
+public abstract class SearchProblem<T extends SearchState> {
+	private final T initialState;
+	private final Iterable<SearchAction> possibleActions;
 	
-	public SearchProblem(GoalTest goalTest, Enumeration<SearchAction> possibleActions, SearchState initialState) {
-		this.goalTest = goalTest;
+	public SearchProblem(Iterable<SearchAction> possibleActions, T initialState) throws SearchProblemException {
 		this.possibleActions = possibleActions;
 		this.initialState = initialState;
 	}
 	
-	public SearchState getInitialState() {
+	public abstract boolean goalTest(T node);
+	
+	public T getInitialState() {
 		return this.initialState;
 	}
-	
-	public GoalTest getGoalTest() {
-		return this.goalTest;
-	}
 
-	public abstract SearchTreeNode makeNode(SearchState initialState);
+	public abstract SearchTreeNode<T> makeNode(SearchTreeNode<T> node, SearchAction action);
 	
-	public Enumeration<SearchAction> getPossibleActions() {
+	public Iterable<SearchAction> getPossibleActions() {
 		return this.possibleActions;
 	}
 	
-	public abstract Iterable<SearchTreeNode> expand(SearchTreeNode nodeToCheck);
+	public Iterable<SearchTreeNode<T>> expand(SearchTreeNode<T> nodeToCheck) {
+		T currentState = nodeToCheck.getCurrentState();
+		
+		LinkedList<SearchTreeNode<T>> newNodes = new LinkedList<SearchTreeNode<T>>();
+		
+		this.getPossibleActions().forEach(new Consumer<SearchAction>() {
+			@Override
+			public void accept(SearchAction action) {
+				if(canTransition(currentState, action))
+					newNodes.add(makeNode(nodeToCheck, action));
+			}
+		});
+		
+		return newNodes;
+	}
+	
+	public abstract boolean canTransition(T state, SearchAction action);
 }

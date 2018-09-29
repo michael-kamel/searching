@@ -1,3 +1,5 @@
 package searching.strategies;
 
-public abstract class UninformedSearchStrategy extends SearchStrategy {}
+import searching.problems.SearchState;
+
+public abstract class UninformedSearchStrategy<T extends SearchState> extends SearchStrategy<T> {}

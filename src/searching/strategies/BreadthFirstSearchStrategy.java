@@ -4,21 +4,23 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
 
-public class BreadthFirstSearchStrategy extends UninformedSearchStrategy {
-	private final Queue<SearchTreeNode> queue;
+import searching.problems.SearchState;
+
+public class BreadthFirstSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {
+	private final Queue<SearchTreeNode<T>> queue;
 	
 	public BreadthFirstSearchStrategy() {
-		this.queue = new LinkedList<SearchTreeNode>();
+		this.queue = new LinkedList<SearchTreeNode<T>>();
 	}
 
 	@Override
-	public void addNode(SearchTreeNode node) {
+	public void addNode(SearchTreeNode<T> node) {
 		queue.add(node);
 	}
 
 	@Override 
-	public Optional<SearchTreeNode> getNext() {
-		SearchTreeNode node = queue.poll();
+	public Optional<SearchTreeNode<T>> getNext() {
+		SearchTreeNode<T> node = queue.poll();
 		if(node == null)
 			return Optional.empty();
 		

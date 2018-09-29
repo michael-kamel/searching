@@ -5,37 +5,38 @@ import java.util.Optional;
 import searching.problems.SearchAction;
 import searching.problems.SearchProblem;
 import searching.problems.SearchProblemSolution;
+import searching.problems.SearchState;
 import searching.strategies.SearchStrategy;
 import searching.strategies.SearchTreeNode;
 
-public abstract class SearchAgent {
+public abstract class SearchAgent<T extends SearchState> {
 	private int maxTreeNodes; //control to avoid running forever
 	
 	public SearchAgent(int maxTreeNodes) {
 		this.maxTreeNodes = maxTreeNodes;
 	}
 	
-	public SearchProblemSolution search(SearchProblem problem, SearchStrategy searchStrategy) {
+	public SearchProblemSolution<T> search(SearchProblem<T> problem, SearchStrategy<T> searchStrategy) {
 		
-		SearchTreeNode rootNode = new SearchTreeNode(Optional.empty(), 0, problem.getInitialState(), SearchAction.NoAction(), 0);
+		SearchTreeNode<T> rootNode = new SearchTreeNode<T>(Optional.empty(), 0, problem.getInitialState(), SearchAction.NoAction(), 0);
 		searchStrategy.addNode(rootNode);
 		int count = 0;
 		
 		while(count <= maxTreeNodes) {
-			Optional<SearchTreeNode> nodeToCheck = searchStrategy.getNext();
+			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();
 			
 			if(!nodeToCheck.isPresent())
-				return SearchProblemSolution.Failure(problem, count+1);
+				return SearchProblemSolution.NoSolution(problem, count+1);
 			
-			if(problem.getGoalTest().isGoal(nodeToCheck.get().getCurrentState()))
-				return new SearchProblemSolution(problem, Optional.of(nodeToCheck.get()), count+1);
+			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
+				return new SearchProblemSolution<T>(problem, Optional.of(nodeToCheck.get()), count+1);
 			
-			Iterable<SearchTreeNode> nodesToAdd = problem.expand(nodeToCheck.get());
+			Iterable<SearchTreeNode<T>> nodesToAdd = problem.expand(nodeToCheck.get());
 			searchStrategy.addNodes(nodesToAdd);
 				
 			count++;
 		}
 		
-		throw new UnsupportedOperationException();//change this
+		return SearchProblemSolution.Bottom(problem, count);
 	}
 }

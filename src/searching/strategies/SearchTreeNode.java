@@ -5,14 +5,14 @@ import java.util.Optional;
 import searching.problems.SearchAction;
 import searching.problems.SearchState;
 
-public class SearchTreeNode implements Comparable<SearchTreeNode> {
-	private final Optional<SearchTreeNode> parent; // The parent of the node in the tree
+public class SearchTreeNode<T extends SearchState> implements Comparable<SearchTreeNode<T>> {
+	private final Optional<SearchTreeNode<T>> parent; // The parent of the node in the tree
 	private final int cost; // The cost from the root of the tree up to this node
-	private final SearchState state; // The current state of the node
+	private final T state; // The current state of the node
 	private final SearchAction action; // The action made to reach this state from the previous
 	private final int depth; //root depth:0; depth from root 
 	
-	public SearchTreeNode(Optional<SearchTreeNode> parent, int cost, SearchState state, SearchAction action, int depth) {
+	public SearchTreeNode(Optional<SearchTreeNode<T>> parent, int cost, T state, SearchAction action, int depth) {
 		this.parent = parent;
 		this.cost = cost;
 		this.state = state;
@@ -20,7 +20,7 @@ public class SearchTreeNode implements Comparable<SearchTreeNode> {
 		this.depth = depth; 
 	}
 
-	public Optional<SearchTreeNode> getParent() {
+	public Optional<SearchTreeNode<T>> getParent() {
 		return parent;
 	}
 
@@ -28,7 +28,7 @@ public class SearchTreeNode implements Comparable<SearchTreeNode> {
 		return cost;
 	}
 
-	public SearchState getCurrentState() {
+	public T getCurrentState() {
 		return state;
 	}
 
@@ -41,7 +41,7 @@ public class SearchTreeNode implements Comparable<SearchTreeNode> {
 	}
 
 	@Override
-	public int compareTo(SearchTreeNode node) {
+	public int compareTo(SearchTreeNode<T> node) {
 		return this.cost < node.cost ? 1 : this.cost == node.cost ? 0 : -1;
 	}
 	
