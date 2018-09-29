@@ -54,7 +54,7 @@ public class MinHeap<T extends Comparable<T>> extends PriorityQueue<T> {
 	
 	private void heapifyDown(int nodeIdx) {
 		T node = heap.get(nodeIdx);
-		T largest = node;
+		T smallest = node;
 		
 		int leftNodeIdx = nodeIdx*2+1;
 		int rightNodeIdx = leftNodeIdx+1;
@@ -71,16 +71,16 @@ public class MinHeap<T extends Comparable<T>> extends PriorityQueue<T> {
 		else
 			rightNode = null;
 		
-		if(leftNode != null && leftNode.compareTo(largest) > 0)
-			largest = leftNode;
+		if(leftNode != null && leftNode.compareTo(smallest) < 0)
+			smallest = leftNode;
 		
-		if(rightNode != null && rightNode.compareTo(largest) > 0)
-			largest = rightNode;
+		if(rightNode != null && rightNode.compareTo(smallest) < 0)
+			smallest = rightNode;
 		
-		if(largest == node)
+		if(smallest == node)
 			return;
 		
-		if(largest == leftNode) {
+		if(smallest == leftNode) {
 			swapNodes(nodeIdx, leftNodeIdx);
 			heapifyDown(leftNodeIdx);
 		} else {
@@ -97,7 +97,7 @@ public class MinHeap<T extends Comparable<T>> extends PriorityQueue<T> {
 		int parentNodeIdx = (nodeIdx - 1) / 2;
 		T parentNode = heap.get(parentNodeIdx);
 		
-		if(node.compareTo(parentNode) > 0) {
+		if(node.compareTo(parentNode) < 0) {
 			swapNodes(nodeIdx, parentNodeIdx);
 			heapifyUp(parentNodeIdx);
 		}
