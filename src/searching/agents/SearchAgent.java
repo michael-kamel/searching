@@ -20,15 +20,15 @@ public abstract class SearchAgent {
 		SearchTreeNode rootNode = new SearchTreeNode(Optional.empty(), 0, problem.getInitialState(), SearchAction.NoAction(), 0);
 		searchStrategy.addNode(rootNode);
 		int count = 0;
+		
 		while(count <= maxTreeNodes) {
 			Optional<SearchTreeNode> nodeToCheck = searchStrategy.getNext();
 			
 			if(!nodeToCheck.isPresent())
-				return SearchProblemSolution.Failure(problem);
-			
+				return SearchProblemSolution.Failure(problem, count+1);
 			
 			if(problem.getGoalTest().isGoal(nodeToCheck.get().getCurrentState()))
-				return new SearchProblemSolution(problem, Optional.of(nodeToCheck.get()));
+				return new SearchProblemSolution(problem, Optional.of(nodeToCheck.get()), count+1);
 			
 			Iterable<SearchTreeNode> nodesToAdd = problem.expand(nodeToCheck.get());
 			searchStrategy.addNodes(nodesToAdd);

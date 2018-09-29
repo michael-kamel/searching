@@ -26,7 +26,7 @@ public abstract class SearchProblem {
 	public abstract SearchTreeNode makeNode(SearchState initialState);
 	
 	public Enumeration<SearchAction> getPossibleActions() {
-		return possibleActions;
+		return this.possibleActions;
 	}
 	
 	public abstract Iterable<SearchTreeNode> expand(SearchTreeNode nodeToCheck);
