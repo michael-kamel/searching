@@ -72,7 +72,12 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState> {
 
 	@Override
 	public boolean goalTest(GOTSearchState node) {
-		return false;
+		boolean[] whiteWalkerStatus = node.getWhiteWalkerStatus();
+		
+		for(int i = 0; i < whiteWalkerStatus.length; i++)
+			if(whiteWalkerStatus[i] == false)
+				return false;
+		
+		return true;
 	}
-
 }

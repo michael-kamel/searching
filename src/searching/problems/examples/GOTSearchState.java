@@ -6,14 +6,14 @@ public class GOTSearchState extends SearchState {
 	private final int dragonStoneCarried;
 	private final int row;
 	private final int column;
-	private final boolean[] deadWhiteWalkers; //0: alive  1: dead
+	private final boolean[] whiteWalkerStatus; //false: alive  true: dead
 	
-	public GOTSearchState(int dragonStoneCarried, int row, int column, boolean[] deadWhiteWalkers) {
+	public GOTSearchState(int dragonStoneCarried, int row, int column, boolean[] whiteWalkerStatus) {
 		super();
 		this.dragonStoneCarried = dragonStoneCarried;
 		this.row = row;
 		this.column = column;
-		this.deadWhiteWalkers = deadWhiteWalkers;
+		this.whiteWalkerStatus = whiteWalkerStatus;
 	}
 
 	public int getDragonStoneCarried() {
@@ -28,8 +28,8 @@ public class GOTSearchState extends SearchState {
 		return column;
 	}
 
-	public boolean[] getDeadWhiteWalkers() {
-		return deadWhiteWalkers;
+	public boolean[] getWhiteWalkerStatus() {
+		return whiteWalkerStatus;
 	}
 	
 }
