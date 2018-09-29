@@ -2,10 +2,7 @@ package searching.problems;
 
 import java.util.Enumeration;
 
-import searching.structs.GoalTest;
-import searching.structs.SearchAction;
-import searching.structs.SearchState;
-import searching.structs.SearchTreeNode;
+import searching.strategies.SearchTreeNode;
 
 public abstract class SearchProblem {
 	private final GoalTest goalTest;

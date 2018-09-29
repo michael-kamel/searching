@@ -1,4 +1,4 @@
-package searching.structs;
+package searching.problems;
 
 @FunctionalInterface
 public interface GoalTest {

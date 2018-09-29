@@ -1,10 +1,9 @@
-package searching.agents;
+package searching.strategies;
 
 import java.util.Optional;
 
-import searching.structs.SearchTreeNode;
-
 public interface SearchStrategy {
 	void addNodes(Iterable<SearchTreeNode> nodes);
-	Optional<SearchTreeNode> getNext();
+	void addNode(SearchTreeNode node);
+	Optional<SearchTreeNode> getNext(); //dequeue
 }
