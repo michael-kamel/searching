@@ -15,8 +15,10 @@ public class IterativeDeepeningSearchStrategy extends UninformedSearchStrategy {
 
 	@Override
 	public void addNode(SearchTreeNode node) {
-		if(!addedFirstNode)
+		if(!addedFirstNode) {
 			rootNode = node;
+			addedFirstNode = true;
+		}
 		
 		if(node.getDepth() > currentMaxDepth) {
 			currentMaxDepth++;
