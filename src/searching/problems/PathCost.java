@@ -2,5 +2,5 @@ package searching.problems;
 
 @FunctionalInterface
 public interface PathCost {
-	Integer pathCost(Iterable<SearchAction> actions);
+	int pathCost(Iterable<SearchAction> actions);
 }
