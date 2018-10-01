@@ -4,13 +4,13 @@ import java.util.Optional;
 
 import searching.strategies.SearchTreeNode;
 
-public class SearchProblemSolution<T extends SearchState> {
+public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	
 	private final Optional<SearchTreeNode<T>> node;
-	private final SearchProblem<T> problem;
+	private final SearchProblem<T, V> problem;
 	private final int expandedNodesCount;
 	
-	public SearchProblemSolution(SearchProblem<T> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
+	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
 		this.problem = problem;
 		this.node = node;
 		this.expandedNodesCount = expandedNodesCount;
@@ -20,7 +20,7 @@ public class SearchProblemSolution<T extends SearchState> {
 		return this.node;
 	}
 
-	public SearchProblem<T> getProblem() {
+	public SearchProblem<T, V> getProblem() {
 		return this.problem;
 	}
 	
@@ -28,22 +28,22 @@ public class SearchProblemSolution<T extends SearchState> {
 		return expandedNodesCount;
 	}
 	
-	public static <T extends SearchState> SearchProblemSolution<T> NoSolution(SearchProblem<T> problem, int expandedNodesCount) {
-		return new FailedSearchProblemSolution<T>(problem, Optional.empty(), expandedNodesCount);
+	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> NoSolution(SearchProblem<T, V> problem, int expandedNodesCount) {
+		return new FailedSearchProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}
 	
-	public static final class FailedSearchProblemSolution<T extends SearchState> extends SearchProblemSolution<T> {
-		public FailedSearchProblemSolution(SearchProblem<T> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
+	public static final class FailedSearchProblemSolution<T extends SearchState, V extends SearchAction> extends SearchProblemSolution<T, V> {
+		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}
 	}
 	
-	public static <T extends SearchState> SearchProblemSolution<T> Bottom(SearchProblem<T> problem, int expandedNodesCount) {
-		return new FailedSearchProblemSolution<T>(problem, Optional.empty(), expandedNodesCount);
+	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> Bottom(SearchProblem<T, V> problem, int expandedNodesCount) {
+		return new FailedSearchProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}
 	
-	public static final class BottomProblemSolution<T extends SearchState> extends SearchProblemSolution<T> {
-		public BottomProblemSolution(SearchProblem<T> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
+	public static final class BottomProblemSolution<T extends SearchState, V extends SearchAction> extends SearchProblemSolution<T, V> {
+		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}
 	}

@@ -1,19 +1,15 @@
 package searching.problems;
 
-public abstract class SearchAction {
-	private final int cost;
-	
-	public SearchAction(int cost) {
-		this.cost = cost;
-	}
-	
-	public int getCost() {
-		return cost;
-	}
-	
-	public static final class NoAction extends SearchAction{
+public interface SearchAction {
+	public int getCost();
+	public static final class NoAction implements SearchAction {
 		public NoAction() {
-			super(0);
+			super();
+		}
+
+		@Override
+		public int getCost() {
+			return 0;
 		}
 	} //used for root nodes
 	
