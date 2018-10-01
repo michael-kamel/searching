@@ -1,6 +1,5 @@
 package searching.problems.examples;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,6 +15,7 @@ import searching.strategies.DepthFirstSearchSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.SearchTreeNode;
 import searching.strategies.UniformCostSearchStrategy;
+import searching.utils.Geomtry;
 import searching.utils.Tuple;
 
 public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAction> {
@@ -23,6 +23,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	private int gridRows;
 	private int gridColumns;
 	private ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations;
+	private ArrayList<Tuple<Integer,Integer>> obstacleLocations;
 	private Tuple<Integer, Integer> dragonStoneLocation;
 	private int whiteWalkersCount;
 	private int maxDragonStones;
@@ -33,6 +34,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		this.gridColumns = width;
 		this.whiteWalkersCount = whiteWalkersCount;
 		this.whiteWalkerLocations = new ArrayList<Tuple<Integer, Integer>>(whiteWalkersCount);
+		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
 		this.maxDragonStones = maxDragonStones;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 	}
@@ -90,6 +92,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			
 			if(grid[row][col] == GameObject.EMPTY) {
 				grid[row][col] = GameObject.OBSTACLE;
+				this.obstacleLocations.add(new Tuple<Integer, Integer>(row, col));
 				obstacleCount--;
 			}
 		}
@@ -98,34 +101,30 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	@Override
 	public GOTSearchState getNewState(SearchTreeNode<GOTSearchState> node, GOTSearchAction action) {
 		GOTSearchState state = node.getCurrentState();
-		int row = state.getRow();
-		int column = state.getColumn();
-		int newRow = row;
-		int newColumn = column;
-		Point location = new Point(row, column);
+		Tuple<Integer, Integer> location = state.getLocation();
+		int newRow = location.getLeft();
+		int newColumn = location.getRight();
 		GOTSearchStateBuilder builder = new GOTSearchStateBuilder();
 		
-		builder.setColumn(state.getColumn())
-			.setRow(state.getRow())
-			.setWhiteWalkerStatus(state.getWhiteWalkerStatus())
+		builder.setWhiteWalkerStatus(state.getWhiteWalkerStatus())
 			.setDragonStoneCarried(state.getDragonStoneCarried());
 		
 		switch(action) {
 			case MOVE_DOWN:
-				newRow = row+1; break;
+				newRow = location.getLeft()+1; break;
 			case MOVE_UP:
-				newRow = row-1; break;
+				newRow = location.getLeft()-1; break;
 			case MOVE_LEFT:
-				newColumn = column-1; break;
+				newColumn = location.getRight()-1; break;
 			case MOVE_RIGHT:
-				newColumn = column+1; break;
+				newColumn = location.getRight()+1; break;
 			case STAB: {
-				ArrayList<Tuple<Point, Boolean>> newWhiteWalkerState = new ArrayList<Tuple<Point, Boolean>>();
+				ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> newWhiteWalkerState = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>();
 				
-				for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus()) {
+				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus()) {
 					if(!whiteWalkerState.getRight())
-						if(whiteWalkerState.getLeft().distance(location) <= 1.0) {
-							newWhiteWalkerState.add(new Tuple<Point, Boolean>(whiteWalkerState.getLeft(), true));
+						if(Geomtry.isAdjacent(whiteWalkerState.getLeft(), location)) {
+							newWhiteWalkerState.add(new Tuple<Tuple<Integer, Integer>, Boolean>(whiteWalkerState.getLeft(), true));
 							continue;
 						}
 					
@@ -134,14 +133,13 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 				
 				builder.setWhiteWalkerStatus(newWhiteWalkerState);
 				builder.setDragonStoneCarried(state.getDragonStoneCarried() - 1);
-				
 			} break;
 		}
 		
-		builder.setColumn(newColumn)
-			.setRow(newRow);
+		Tuple<Integer, Integer> newLocation = new Tuple<Integer, Integer>(newRow, newColumn);
+		builder.setLocation(newLocation);
 		
-		if(newRow == dragonStoneLocation.getX() && newColumn == dragonStoneLocation.getX())
+		if(newLocation.equals(dragonStoneLocation))
 			builder.setDragonStoneCarried(maxDragonStones);
 			
 		return builder.build();
@@ -149,53 +147,55 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	
 	@Override
 	public boolean canTransition(GOTSearchState state, GOTSearchAction action) {
-		int row = state.getRow();
-		int column = state.getColumn();
-		Point location = new Point(row, column);
-		boolean canTransition = true;
+		Tuple<Integer, Integer> location = state.getLocation();
+		int newRow = location.getLeft();
+		int newColumn = location.getRight();
+		
 		switch(action) {
 			case STAB: {
 				if(state.getDragonStoneCarried() <= 0)
 					return false;
 				
-				for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
+				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
 					if(!whiteWalkerState.getRight())
-						if(whiteWalkerState.getLeft().distance(location) <= 1.0)
+						if(Geomtry.isAdjacent(whiteWalkerState.getLeft(), location))
 							return true;
 				
 				return false;
 			}
 			case MOVE_DOWN:
-				location.translate(1, 0);
-				break;
-			case MOVE_LEFT:
-				location.translate(0, -1);
-				break;
-			case MOVE_RIGHT:
-				location.translate(0, 1);
+				newRow += 1;
 				break;
 			case MOVE_UP:
-				location.translate(-1, 0);
+				newRow -= 1;
+				break;
+			case MOVE_LEFT:
+				newColumn -= 1;
+				break;
+			case MOVE_RIGHT:
+				newColumn += 1;
 				break;
 		}
 		
-		if(!isValidLocation(location))
-			canTransition = false;
-		
-		for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
+		Tuple<Integer, Integer> newLocation = new Tuple<Integer, Integer>(newRow, newColumn);
+		if(!isValidLocation(newLocation))
+			return false;
+
+		for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
 			if(!whiteWalkerState.getRight())
-				if(location.equals(whiteWalkerState.getLeft()))
-					canTransition = false;
+				if(newLocation.equals(whiteWalkerState.getLeft()))
+					return false;
 		
-		return canTransition;
+		if(grid[newLocation.getLeft()][newLocation.getRight()] == GameObject.OBSTACLE)
+			return false;
+		
+		return true;
 	}
 
-	public boolean isValidLocation(Point point) {
-		if(point.getX() >= this.gridRows || point.getX() < 0)
+	public boolean isValidLocation(Tuple<Integer, Integer> location) {
+		if(location.getLeft() >= this.gridRows || location.getLeft() < 0)
 			return false;
-		if(point.getY() >= this.gridColumns || point.getY() < 0)
-			return false;
-		if(grid[(int) point.getX()][(int) point.getY()] == GameObject.OBSTACLE)
+		if(location.getRight() >= this.gridColumns || location.getRight() < 0)
 			return false;
 		
 		return true;
@@ -203,7 +203,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	
 	@Override
 	public boolean goalTest(GOTSearchState state) {
-		for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
+		for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
 			if(!whiteWalkerState.getRight())
 				return false;
 				
@@ -238,15 +238,15 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		try {
 			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 2, 1, 2);
 			problem.visualize();
-			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(10000000);
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(100000);
 			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			System.in.read();
-			System.in.read();
 			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
 			System.out.println(sol);
 			
+			System.in.read();
 			System.in.read();
 			sol.showNodeSequence();
 		} catch (SearchProblemException e) {

@@ -20,4 +20,8 @@ public class Tuple<L, R> {
 	public String toString() {
 		return this.left + " " + this.right;
 	}
+	
+	public boolean equals(Tuple<L, R> tuple) {
+		return this.left == tuple.getLeft() && this.right == tuple.getRight();
+	}
 }

@@ -1,6 +1,5 @@
 package searching.agents;
 
-import java.util.Iterator;
 import java.util.Optional;
 
 import searching.problems.SearchAction;
@@ -27,19 +26,8 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 			if(!nodeToCheck.isPresent())
 				return SearchProblemSolution.NoSolution(problem, count+1);
 			
-			//System.out.println(nodeToCheck.get().getCurrentState());
-			
 			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
 				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count+1);
-			
-			Iterable<SearchTreeNode<T>> nodesToExpand = problem.expand(nodeToCheck.get());
-			/*Iterator<SearchTreeNode<T>> iterator = nodesToExpand.iterator();
-			int i = 0;
-			while(iterator.hasNext()) {
-			    i++;
-			    iterator.next();
-			}
-			System.out.println("allowed nodes: " + i);*/
 			
 			searchStrategy.addNodes(problem.expand(nodeToCheck.get()));
 			count++;
