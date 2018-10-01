@@ -10,10 +10,14 @@ public class Tuple<L, R> {
 	}
 
 	public L getLeft() {
-		return left;
+		return this.left;
 	}
 
 	public R getRight() {
-		return right;
+		return this.right;
+	}
+	
+	public String toString() {
+		return this.left + " " + this.right;
 	}
 }

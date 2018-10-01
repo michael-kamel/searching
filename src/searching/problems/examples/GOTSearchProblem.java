@@ -22,8 +22,8 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	private GameObject[][] grid;
 	private int gridRows;
 	private int gridColumns;
-	private Point[] whiteWalkerLocations;
-	private Point dragonStoneLocation;
+	private ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations;
+	private Tuple<Integer, Integer> dragonStoneLocation;
 	private int whiteWalkersCount;
 	private int maxDragonStones;
 	
@@ -32,19 +32,19 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		this.gridRows = height;
 		this.gridColumns = width;
 		this.whiteWalkersCount = whiteWalkersCount;
-		this.whiteWalkerLocations = new Point[whiteWalkersCount];
+		this.whiteWalkerLocations = new ArrayList<Tuple<Integer, Integer>>(whiteWalkersCount);
 		this.maxDragonStones = maxDragonStones;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 	}
 	
 	@Override
 	public GOTSearchState getInitialState() {
-		ArrayList<Tuple<Point, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Point, Boolean>>(whiteWalkersCount);
+		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(whiteWalkersCount);
 		
-		for(Point point : this.whiteWalkerLocations)
-			whiteWalkersStatus.add(new Tuple<Point, Boolean>(point, false));
+		for(Tuple<Integer, Integer> point : this.whiteWalkerLocations)
+			whiteWalkersStatus.add(new Tuple<Tuple<Integer, Integer>, Boolean>(point, false));
 		
-		return new GOTSearchState(0, gridRows-1, gridColumns-1, whiteWalkersStatus);
+		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus);
 	}
 	
 	public void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) throws SearchProblemGameConstructionConstraintsViolation {
@@ -69,18 +69,17 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			if(grid[row][col] == GameObject.EMPTY) {
 				grid[row][col] = GameObject.DRAGON_STONE;
 				dragonStonePlaced = true;
-				dragonStoneLocation = new Point(row, col);
+				dragonStoneLocation = new Tuple<Integer, Integer>(row, col);
 			}
 		}
 		
-		int whiteWalkerIdx = 0;
 		while(whiteWalkersCount > 0) {
 			int row = rnd.nextInt(height);
 			int col = rnd.nextInt(width);
 			
 			if(grid[row][col] == GameObject.EMPTY) {
 				grid[row][col] = GameObject.WHITE_WALKER;
-				this.whiteWalkerLocations[whiteWalkerIdx++] = new Point(row,col);
+				this.whiteWalkerLocations.add(new Tuple<Integer, Integer>(row,col)); 
 				whiteWalkersCount--;
 			}
 		}
