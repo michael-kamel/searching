@@ -1,8 +1,8 @@
 package searching.problems.examples;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 
 import searching.agents.SearchAgent;
@@ -10,6 +10,9 @@ import searching.exceptions.SearchProblemException;
 import searching.exceptions.SearchProblemGameConstructionConstraintsViolation;
 import searching.problems.SearchProblem;
 import searching.problems.SearchProblemSolution;
+import searching.problems.examples.GOTSearchState.GOTSearchStateBuilder;
+import searching.strategies.BreadthFirstSearchStrategy;
+import searching.strategies.DepthFirstSearchSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.SearchTreeNode;
 import searching.strategies.UniformCostSearchStrategy;
@@ -24,8 +27,8 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	private int whiteWalkersCount;
 	private int maxDragonStones;
 	
-	public GOTSearchProblem(Iterable<GOTSearchAction> possibleActions, int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
-		super(possibleActions);
+	public GOTSearchProblem(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
+		super(GOTSearchAction.getAll());
 		this.gridRows = height;
 		this.gridColumns = width;
 		this.whiteWalkersCount = whiteWalkersCount;
@@ -61,64 +64,63 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		Random rnd = new Random();
 		boolean dragonStonePlaced = false;
 		while(!dragonStonePlaced) {
-			int x = rnd.nextInt(height);
-			int y = rnd.nextInt(width);
-			if(grid[x][y] == GameObject.EMPTY) {
-				grid[x][y] = GameObject.DRAGON_STONE;
+			int row = rnd.nextInt(height);
+			int col = rnd.nextInt(width);
+			if(grid[row][col] == GameObject.EMPTY) {
+				grid[row][col] = GameObject.DRAGON_STONE;
 				dragonStonePlaced = true;
-				dragonStoneLocation = new Point(x, y);
+				dragonStoneLocation = new Point(row, col);
 			}
 		}
 		
 		int whiteWalkerIdx = 0;
 		while(whiteWalkersCount > 0) {
-			int x = rnd.nextInt(height);
-			int y = rnd.nextInt(width);
+			int row = rnd.nextInt(height);
+			int col = rnd.nextInt(width);
 			
-			if(grid[x][y] == GameObject.EMPTY) {
-				grid[x][y] = GameObject.WHITE_WALKER;
-				this.whiteWalkerLocations[whiteWalkerIdx++] = new Point(x,y);
+			if(grid[row][col] == GameObject.EMPTY) {
+				grid[row][col] = GameObject.WHITE_WALKER;
+				this.whiteWalkerLocations[whiteWalkerIdx++] = new Point(row,col);
 				whiteWalkersCount--;
 			}
 		}
 		
 		while(obstacleCount > 0) {
-			int x = rnd.nextInt(height);
-			int y = rnd.nextInt(width);
+			int row = rnd.nextInt(height);
+			int col = rnd.nextInt(width);
 			
-			if(grid[x][y] == GameObject.EMPTY) {
-				grid[x][y] = GameObject.OBSTACLE;
+			if(grid[row][col] == GameObject.EMPTY) {
+				grid[row][col] = GameObject.OBSTACLE;
 				obstacleCount--;
 			}
 		}
 	}
 
 	@Override
-	public SearchTreeNode<GOTSearchState> makeNode(SearchTreeNode<GOTSearchState> node, GOTSearchAction action) {
+	public GOTSearchState getNewState(SearchTreeNode<GOTSearchState> node, GOTSearchAction action) {
 		GOTSearchState state = node.getCurrentState();
 		int row = state.getRow();
 		int column = state.getColumn();
+		int newRow = row;
+		int newColumn = column;
 		Point location = new Point(row, column);
-		GOTSearchState newState = null;
+		GOTSearchStateBuilder builder = new GOTSearchStateBuilder();
+		
+		builder.setColumn(state.getColumn())
+			.setRow(state.getRow())
+			.setWhiteWalkerStatus(state.getWhiteWalkerStatus())
+			.setDragonStoneCarried(state.getDragonStoneCarried());
 		
 		switch(action) {
 			case MOVE_DOWN:
-				newState = new GOTSearchState(state.getDragonStoneCarried(), row+1, column, state.getWhiteWalkerStatus()); break;
+				newRow = row+1; break;
 			case MOVE_UP:
-				newState = new GOTSearchState(state.getDragonStoneCarried(), row-1, column, state.getWhiteWalkerStatus()); break;
+				newRow = row-1; break;
 			case MOVE_LEFT:
-				newState = new GOTSearchState(state.getDragonStoneCarried(), row, column-1, state.getWhiteWalkerStatus()); break;
+				newColumn = column-1; break;
 			case MOVE_RIGHT:
-				newState = new GOTSearchState(state.getDragonStoneCarried(), row, column+1, state.getWhiteWalkerStatus()); break;
+				newColumn = column+1; break;
 			case STAB: {
-				int deadCount = 0;
-				for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
-					if(whiteWalkerState.getRight())
-						deadCount++;
-				
-				System.out.println("STAB");
-				System.out.println(deadCount);
-				
 				ArrayList<Tuple<Point, Boolean>> newWhiteWalkerState = new ArrayList<Tuple<Point, Boolean>>();
 				
 				for(Tuple<Point, Boolean> whiteWalkerState : state.getWhiteWalkerStatus()) {
@@ -131,12 +133,19 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 					newWhiteWalkerState.add(whiteWalkerState);
 				}
 				
-				newState = new GOTSearchState(state.getDragonStoneCarried(), row, column, newWhiteWalkerState);
+				builder.setWhiteWalkerStatus(newWhiteWalkerState);
+				builder.setDragonStoneCarried(state.getDragonStoneCarried() - 1);
 				
 			} break;
 		}
+		
+		builder.setColumn(newColumn)
+			.setRow(newRow);
+		
+		if(newRow == dragonStoneLocation.getX() && newColumn == dragonStoneLocation.getX())
+			builder.setDragonStoneCarried(maxDragonStones);
 			
-		return new SearchTreeNode<GOTSearchState>(Optional.of(node), action.getCost(), newState, action, node.getDepth()+1);
+		return builder.build();
 	}
 	
 	@Override
@@ -187,6 +196,8 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			return false;
 		if(point.getY() >= this.gridColumns || point.getY() < 0)
 			return false;
+		if(grid[(int) point.getX()][(int) point.getY()] == GameObject.OBSTACLE)
+			return false;
 		
 		return true;
 	}
@@ -221,20 +232,28 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 				}
 			}
 			System.out.println();
-		}
-		
-				
+		}		
 	}
 	
 	public static void main(String[] args) {
 		try {
-			GOTSearchProblem problem = new GOTSearchProblem(GOTSearchAction.getAll(), 4, 4, 2, 1, 2);
+			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 2, 1, 2);
 			problem.visualize();
-			SearchAgent agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
-			SearchStrategy<GOTSearchState> strategy = new UniformCostSearchStrategy<GOTSearchState>();
-			SearchProblemSolution sol = agent.search(problem, strategy);
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(10000000);
+			SearchStrategy<GOTSearchState> ucsStrategy = new UniformCostSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
+			System.in.read();
+			System.in.read();
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, bfsSearchStrategy);
 			System.out.println(sol);
+			
+			System.in.read();
+			sol.showNodeSequence();
 		} catch (SearchProblemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

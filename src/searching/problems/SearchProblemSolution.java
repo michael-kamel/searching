@@ -28,6 +28,21 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return expandedNodesCount;
 	}
 	
+	public void showNodeSequence() {
+		if(this.node.isPresent()) {
+			showNode(this.node.get());
+		} else {
+			System.out.println("No Solution");
+		}
+	}
+	
+	private void showNode(SearchTreeNode<T> node) {
+		if(node.getParent().isPresent())
+			showNode(node.getParent().get());
+		
+		System.out.println(node.getCurrentState());
+	}
+	
 	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> NoSolution(SearchProblem<T, V> problem, int expandedNodesCount) {
 		return new FailedSearchProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}

@@ -46,4 +46,32 @@ public class GOTSearchState extends SearchState {
 		return str;
 	}
 	
+	
+	public static class GOTSearchStateBuilder{
+		private int dragonStoneCarried;
+		private int row;
+		private int column;
+		private ArrayList<Tuple<Point, Boolean>> whiteWalkerStatus; //false: alive  true: dead
+		
+		public GOTSearchStateBuilder setDragonStoneCarried(int dragonStoneCarried) {
+			this.dragonStoneCarried = dragonStoneCarried;
+			return this;
+		}
+		public GOTSearchStateBuilder setRow(int row) {
+			this.row = row;
+			return this;
+		}
+		public GOTSearchStateBuilder setColumn(int column) {
+			this.column = column;
+			return this;
+		}
+		public GOTSearchStateBuilder setWhiteWalkerStatus(ArrayList<Tuple<Point, Boolean>> whiteWalkerStatus) {
+			this.whiteWalkerStatus = whiteWalkerStatus;
+			return this;
+		}
+		
+		public GOTSearchState build() {
+			return new GOTSearchState(dragonStoneCarried, row, column, whiteWalkerStatus);
+		}
+	}
 }

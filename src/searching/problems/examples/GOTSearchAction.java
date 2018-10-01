@@ -10,24 +10,30 @@ public enum GOTSearchAction implements SearchAction {
 	MOVE_LEFT(10),
 	MOVE_RIGHT(10),
 	STAB(1);
-
+	
+	static {
+		LinkedList<GOTSearchAction> allGOTActions = new LinkedList<GOTSearchAction>();
+		allGOTActions.add(GOTSearchAction.MOVE_UP);
+		allGOTActions.add(GOTSearchAction.MOVE_DOWN);
+		allGOTActions.add(GOTSearchAction.MOVE_LEFT);
+		allGOTActions.add(GOTSearchAction.MOVE_RIGHT);
+		allGOTActions.add(GOTSearchAction.STAB);
+		allActions = allGOTActions;
+	}
+	
+	private static final Iterable<GOTSearchAction> allActions;
 	private final int cost;
 	
 	private GOTSearchAction(int cost) {
 		this.cost = cost;
 	}
+	
 	@Override
 	public int getCost() {
 		return this.cost;
 	}
 
 	public static Iterable<GOTSearchAction> getAll() {
-		LinkedList<GOTSearchAction> allActions = new LinkedList<GOTSearchAction>();
-		allActions.add(GOTSearchAction.MOVE_UP);
-		allActions.add(GOTSearchAction.MOVE_DOWN);
-		allActions.add(GOTSearchAction.MOVE_LEFT);
-		allActions.add(GOTSearchAction.MOVE_RIGHT);
-		allActions.add(GOTSearchAction.STAB);
 		return allActions;
 	}
 }

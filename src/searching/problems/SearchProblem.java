@@ -1,6 +1,7 @@
 package searching.problems;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import searching.exceptions.SearchProblemException;
@@ -17,7 +18,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract T getInitialState();
 
-	public abstract SearchTreeNode<T> makeNode(SearchTreeNode<T> node, V action);
+	public abstract T getNewState(SearchTreeNode<T> node, V action);
 	
 	public Iterable<V> getPossibleActions() {
 		return this.possibleActions;
@@ -31,8 +32,11 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 		this.getPossibleActions().forEach(new Consumer<V>() {
 			@Override
 			public void accept(V action) {
-				if(canTransition(currentState, action))
-					newNodes.add(makeNode(nodeToCheck, action));
+				if(canTransition(currentState, action)) {
+					T newState = getNewState(nodeToCheck, action);
+					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), nodeToCheck.getCost()+action.getCost(), newState, action, nodeToCheck.getDepth()+1);   
+					newNodes.add(newNode);
+				}
 			}
 		});
 		
