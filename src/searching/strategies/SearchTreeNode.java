@@ -42,7 +42,7 @@ public class SearchTreeNode<T extends SearchState> implements Comparable<SearchT
 
 	@Override
 	public int compareTo(SearchTreeNode<T> node) {
-		return this.cost < node.cost ? 1 : this.cost == node.cost ? 0 : -1;
+		return this.cost > node.cost ? 1 : this.cost == node.cost ? 0 : -1;
 	}
 	
 }

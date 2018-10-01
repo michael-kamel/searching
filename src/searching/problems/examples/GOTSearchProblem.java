@@ -240,12 +240,12 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 2, 1, 2);
 			problem.visualize();
 			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(10000000);
-			SearchStrategy<GOTSearchState> ucsStrategy = new UniformCostSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			System.in.read();
 			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, bfsSearchStrategy);
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
 			System.out.println(sol);
 			
 			System.in.read();
