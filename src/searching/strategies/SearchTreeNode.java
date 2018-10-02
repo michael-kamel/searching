@@ -17,7 +17,7 @@ public class SearchTreeNode<T extends SearchState> implements Comparable<SearchT
 		this.cost = cost;
 		this.state = state;
 		this.action = action;
-		this.depth = depth; 
+		this.depth = depth;
 	}
 
 	public Optional<SearchTreeNode<T>> getParent() {

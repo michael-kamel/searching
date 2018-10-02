@@ -23,11 +23,12 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 		
 		while(count <= maxTreeNodes) {
 			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();
+			
 			if(!nodeToCheck.isPresent())
-				return SearchProblemSolution.NoSolution(problem, count+1);
+				return SearchProblemSolution.NoSolution(problem, count);
 			
 			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
-				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count+1);
+				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count);
 			
 			searchStrategy.addNodes(problem.expand(nodeToCheck.get()));
 			count++;

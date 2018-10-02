@@ -6,20 +6,20 @@ import searching.problems.SearchState;
 import searching.utils.Tuple;
 
 public class GOTSearchState extends SearchState {
-	private final int dragonStoneCarried;
+	private final int dragonGlassCarried;
 	private final Tuple<Integer, Integer> location;
 	private final ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus; //false: alive  true: dead
 	
 	public GOTSearchState(int dragonStoneCarried, Tuple<Integer, Integer> location, 
 			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus) {
 		super();
-		this.dragonStoneCarried = dragonStoneCarried;
+		this.dragonGlassCarried = dragonStoneCarried;
 		this.location = location;
 		this.whiteWalkerStatus = whiteWalkerStatus;
 	}
 
 	public int getDragonStoneCarried() {
-		return dragonStoneCarried;
+		return this.dragonGlassCarried;
 	}
 
 	public Tuple<Integer, Integer> getLocation() {
@@ -27,12 +27,12 @@ public class GOTSearchState extends SearchState {
 	}
 
 	public ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> getWhiteWalkerStatus() {
-		return whiteWalkerStatus;
+		return this.whiteWalkerStatus;
 	}
 	
 	public String toString() {
 		String str = "";
-		str += "Dragon Stone: " + this.dragonStoneCarried + " \n";
+		str += "Dragon Stone: " + this.dragonGlassCarried + " \n";
 		str += "Location: " + this.location + " \n";
 		for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : this.whiteWalkerStatus)
 			str += "  WW(" + whiteWalkerState.getLeft() + ")" + (whiteWalkerState.getRight()?"D":"A") + "\n";

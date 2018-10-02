@@ -9,7 +9,9 @@ import searching.exceptions.SearchProblemException;
 import searching.exceptions.SearchProblemGameConstructionConstraintsViolation;
 import searching.problems.SearchProblem;
 import searching.problems.SearchProblemSolution;
+import searching.problems.SearchProblemWithHeuristic;
 import searching.problems.examples.GOTSearchState.GOTSearchStateBuilder;
+import searching.strategies.AStarSearchStrategy;
 import searching.strategies.BreadthFirstSearchStrategy;
 import searching.strategies.DepthFirstSearchSearchStrategy;
 import searching.strategies.IterativeDeepeningSearchStrategy;
@@ -18,7 +20,7 @@ import searching.strategies.UniformCostSearchStrategy;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
 
-public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAction> {
+public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState, GOTSearchAction> {
 	private GameObject[][] grid;
 	private int gridRows;
 	private int gridColumns;
@@ -122,6 +124,10 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		}
 	}
 	
+	public long getHeuristicCost(GOTSearchState state) {
+		return 0;
+	}
+	
 	@Override
 	public GOTSearchState getInitialState() {
 		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(whiteWalkersCount);
@@ -186,7 +192,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		
 		switch(action) {
 			case STAB: {
-				if(state.getDragonStoneCarried() <= 0)
+				if(state.getDragonStoneCarried() == 0)
 					return false;
 				
 				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
@@ -314,8 +320,9 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(problem);
 			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, idsSearchStrategy);
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, astarSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
 				System.out.println("No Solution");
 			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
