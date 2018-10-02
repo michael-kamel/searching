@@ -315,7 +315,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
 			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, bfsSearchStrategy);
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, idsSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
 				System.out.println("No Solution");
 			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {

@@ -10,9 +10,11 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 	private int currentMaxDepth = 0;
 	private boolean addedFirstNode = false;
 	private SearchTreeNode<T> rootNode;
+	private boolean hasMoreDepth;
 	
 	public IterativeDeepeningSearchStrategy() {
 		this.stack = new Stack<SearchTreeNode<T>>();
+		this.hasMoreDepth = false;
 	}
 
 	@Override
@@ -22,16 +24,22 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 			addedFirstNode = true;
 		}
 		
-		if(node.getDepth() > currentMaxDepth)
+		if(node.getDepth() > this.currentMaxDepth) {
+			this.hasMoreDepth = true;
 			return;
+		}
 		
 		this.stack.push(node);
 	}
 
 	@Override
 	public Optional<SearchTreeNode<T>> getNext() {
-		if(stack.isEmpty())
-			return Optional.empty();
+		if(stack.isEmpty()) {
+			if(this.hasMoreDepth)
+				this.resetProblem();
+			else
+				return Optional.empty();
+		}
 		
 		return Optional.of(stack.pop());
 	}
@@ -40,9 +48,10 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 		this.currentMaxDepth = depth;
 	}
 
-	public void incrementDepth() {
+	private void resetProblem() {
 		currentMaxDepth++;
 		stack.clear();
 		stack.push(rootNode);
+		this.hasMoreDepth = false;
 	}
 }

@@ -18,7 +18,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract T getInitialState();
 
-	public abstract T getNewState(T node, V action);
+	public abstract T getNewState(T state, V action);
 	
 	public Iterable<V> getPossibleActions() {
 		return this.possibleActions;
