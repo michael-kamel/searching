@@ -39,21 +39,25 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 	}
 	
-	@Override
-	public GOTSearchState getInitialState() {
-		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(whiteWalkersCount);
-		
-		for(Tuple<Integer, Integer> point : this.whiteWalkerLocations)
-			whiteWalkersStatus.add(new Tuple<Tuple<Integer, Integer>, Boolean>(point, false));
-		
-		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus);
+	public GOTSearchProblem(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
+			ArrayList<Tuple<Integer,Integer>> obstacleLocations, Tuple<Integer, Integer> dragonStoneLocation,
+			int maxDragonStones) throws SearchProblemException {
+		super(GOTSearchAction.getAll());
+		this.gridRows = height;
+		this.gridColumns = width;
+		this.whiteWalkersCount = whiteWalkerLocations.size();
+		this.whiteWalkerLocations = whiteWalkerLocations;
+		this.obstacleLocations = obstacleLocations;
+		this.maxDragonStones = maxDragonStones;
+		this.dragonStoneLocation = dragonStoneLocation;
+		genGrid(width, height, whiteWalkerLocations, obstacleLocations, dragonStoneLocation);
 	}
 	
-	public void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) throws SearchProblemGameConstructionConstraintsViolation {
+	private void initGrid(int width, int height) throws SearchProblemGameConstructionConstraintsViolation {
 		if(width < 4)
 			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a width of 4 units or more");
 		if(height < 4)
-			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a height of 4 unite or more");
+			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
 		
 		grid = new GameObject[height][width];
 		
@@ -62,7 +66,27 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 				grid[i][j] = GameObject.EMPTY;
 		
 		grid[height-1][width-1] = GameObject.JON_SNOW;
+	}
+	
+	private void genGrid(int width, int height, ArrayList<Tuple<Integer, Integer>> whiteWalkersLocations,
+			ArrayList<Tuple<Integer, Integer>> obstacleLocations,
+			Tuple<Integer, Integer> dragonStoneLocation) throws SearchProblemGameConstructionConstraintsViolation {
 		
+		initGrid(width, height);
+		whiteWalkersLocations.forEach(whiteWalkerLocation -> {
+			this.grid[whiteWalkerLocation.getLeft()][whiteWalkerLocation.getRight()] = GameObject.WHITE_WALKER;
+		});
+		
+		obstacleLocations.forEach(obstacleLocation -> {
+			this.grid[obstacleLocation.getLeft()][obstacleLocation.getRight()] = GameObject.OBSTACLE;
+		});
+		
+		this.grid[dragonStoneLocation.getLeft()][dragonStoneLocation.getRight()] = GameObject.DRAGON_STONE;	
+	}
+
+	private void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) throws SearchProblemGameConstructionConstraintsViolation {
+		
+		initGrid(width, height);
 		Random rnd = new Random();
 		boolean dragonStonePlaced = false;
 		while(!dragonStonePlaced) {
@@ -96,6 +120,16 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 				obstacleCount--;
 			}
 		}
+	}
+	
+	@Override
+	public GOTSearchState getInitialState() {
+		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(whiteWalkersCount);
+		
+		for(Tuple<Integer, Integer> point : this.whiteWalkerLocations)
+			whiteWalkersStatus.add(new Tuple<Tuple<Integer, Integer>, Boolean>(point, false));
+		
+		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus);
 	}
 
 	@Override
@@ -234,26 +268,69 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		}		
 	}
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		try {
-			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 2, 1, 2);
+			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 3, 2, 2);
 			problem.visualize();
-			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(100000);
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
 			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			System.in.read();
 			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
-			System.out.println(sol);
-			
-			System.in.read();
-			System.in.read();
-			sol.showNodeSequence();
+			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
+				System.out.println("No Solution");
+			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
+				System.out.println("Resources Exhausted");
+			} else {
+				System.out.println("Press enter...");
+				System.in.read();
+				sol.showNodeSequence();
+				System.out.println(sol.getExpandedNodesCount());
+				System.out.println(sol.getNode().get().getCost());
+			}
 		} catch (SearchProblemException e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args) {
+		try {
+			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
+			whiteWalkers.add(new Tuple<Integer, Integer>(1, 1));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 2));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 3));
+			
+			ArrayList<Tuple<Integer, Integer>> obstacleLocations = new ArrayList<Tuple<Integer, Integer>>();
+			obstacleLocations.add(new Tuple<Integer, Integer>(0, 3));
+			obstacleLocations.add(new Tuple<Integer, Integer>(2, 1));
+			
+			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(1, 0);
+			GOTSearchProblem problem = new GOTSearchProblem(4, 4, whiteWalkers, obstacleLocations, dragonStone, 2);
+			problem.visualize();
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
+			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
+			System.in.read();
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
+			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
+				System.out.println("No Solution");
+			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
+				System.out.println("Resources Exhausted");
+			} else {
+				System.out.println("Press enter...");
+				System.in.read();
+				sol.showNodeSequence();
+				System.out.println(sol.getExpandedNodesCount());
+				System.out.println(sol.getNode().get().getCost());
+			}
+		} catch (SearchProblemException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

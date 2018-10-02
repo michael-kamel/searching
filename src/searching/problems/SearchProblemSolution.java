@@ -54,7 +54,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	}
 	
 	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> Bottom(SearchProblem<T, V> problem, int expandedNodesCount) {
-		return new FailedSearchProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
+		return new BottomProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}
 	
 	public static final class BottomProblemSolution<T extends SearchState, V extends SearchAction> extends SearchProblemSolution<T, V> {

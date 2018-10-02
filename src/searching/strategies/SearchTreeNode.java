@@ -7,12 +7,12 @@ import searching.problems.SearchState;
 
 public class SearchTreeNode<T extends SearchState> implements Comparable<SearchTreeNode<T>> {
 	private final Optional<SearchTreeNode<T>> parent; // The parent of the node in the tree
-	private final int cost; // The cost from the root of the tree up to this node
+	private final long cost; // The cost from the root of the tree up to this node
 	private final T state; // The current state of the node
 	private final SearchAction action; // The action made to reach this state from the previous
 	private final int depth; //root depth:0; depth from root 
 	
-	public SearchTreeNode(Optional<SearchTreeNode<T>> parent, int cost, T state, SearchAction action, int depth) {
+	public SearchTreeNode(Optional<SearchTreeNode<T>> parent, long cost, T state, SearchAction action, int depth) {
 		this.parent = parent;
 		this.cost = cost;
 		this.state = state;
@@ -24,7 +24,7 @@ public class SearchTreeNode<T extends SearchState> implements Comparable<SearchT
 		return parent;
 	}
 
-	public int getCost() {
+	public long getCost() {
 		return cost;
 	}
 
