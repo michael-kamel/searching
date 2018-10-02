@@ -4,13 +4,12 @@ import searching.problems.SearchAction;
 import searching.problems.SearchProblemWithHeuristic;
 import searching.problems.SearchState;
 
-public abstract class InformedSearchStrategy<T extends SearchState, V extends SearchAction>
-	extends SearchStrategy<T> {
+public abstract class InformedSearchStrategy<T extends SearchState> extends SearchStrategy<T> {
 	
 	private final HeuristicFunction<T> heuristic;
 	
-	public InformedSearchStrategy(SearchProblemWithHeuristic<T, V> problem) {
-		this.heuristic = problem::getHeuristicCost;
+	public InformedSearchStrategy(HeuristicFunction<T> heuristic) {
+		this.heuristic = heuristic;
 	}
 	
 	protected HeuristicFunction<T> getHeuristic() {

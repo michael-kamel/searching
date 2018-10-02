@@ -320,7 +320,7 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(problem);
+			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState>(problem.getHeuristicFunction());
 			System.in.read();
 			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, astarSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {

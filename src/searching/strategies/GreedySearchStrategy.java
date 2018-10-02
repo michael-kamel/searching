@@ -3,16 +3,13 @@ package searching.strategies;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.PriorityQueue;
-
-import searching.problems.SearchAction;
-import searching.problems.SearchProblemWithHeuristic;
 import searching.problems.SearchState;
 
-public class GreedySearchStrategy<T extends SearchState, V extends SearchAction> extends InformedSearchStrategy<T, V> {
+public class GreedySearchStrategy<T extends SearchState> extends InformedSearchStrategy<T> {
 	private final PriorityQueue<SearchTreeNode<T>> queue;
 	
-	public GreedySearchStrategy(SearchProblemWithHeuristic<T, V> problem) {
-		super(problem);
+	public GreedySearchStrategy(HeuristicFunction<T> heuristic) {
+		super(heuristic);
 		this.queue = new PriorityQueue<SearchTreeNode<T>>(new Comparator<SearchTreeNode<T>>() {
 			@Override
 			public int compare(SearchTreeNode<T> firstNode, SearchTreeNode<T> secondNode) {
