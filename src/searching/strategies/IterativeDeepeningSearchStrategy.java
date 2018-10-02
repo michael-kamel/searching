@@ -22,12 +22,8 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 			addedFirstNode = true;
 		}
 		
-		if(node.getDepth() > currentMaxDepth) {
-			currentMaxDepth++;
-			stack.clear();
-			stack.push(rootNode);
+		if(node.getDepth() > currentMaxDepth)
 			return;
-		}
 		
 		this.stack.push(node);
 	}
@@ -42,5 +38,11 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 	
 	public void setDepth(int depth) {
 		this.currentMaxDepth = depth;
+	}
+
+	public void incrementDepth() {
+		currentMaxDepth++;
+		stack.clear();
+		stack.push(rootNode);
 	}
 }

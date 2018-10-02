@@ -12,8 +12,8 @@ import searching.problems.SearchProblemSolution;
 import searching.problems.examples.GOTSearchState.GOTSearchStateBuilder;
 import searching.strategies.BreadthFirstSearchStrategy;
 import searching.strategies.DepthFirstSearchSearchStrategy;
+import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
-import searching.strategies.SearchTreeNode;
 import searching.strategies.UniformCostSearchStrategy;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
@@ -313,8 +313,9 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
+			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
 			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, bfsSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
 				System.out.println("No Solution");
 			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {

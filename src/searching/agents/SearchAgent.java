@@ -6,6 +6,7 @@ import searching.problems.SearchAction;
 import searching.problems.SearchProblem;
 import searching.problems.SearchProblemSolution;
 import searching.problems.SearchState;
+import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.SearchTreeNode;
 
@@ -24,7 +25,12 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 		while(count <= maxTreeNodes) {
 			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();
 			if(!nodeToCheck.isPresent())
-				return SearchProblemSolution.NoSolution(problem, count+1);
+				if(searchStrategy instanceof IterativeDeepeningSearchStrategy) {
+					((IterativeDeepeningSearchStrategy<T>)searchStrategy).incrementDepth();
+					continue;
+				}
+				else
+					return SearchProblemSolution.NoSolution(problem, count+1);
 			
 			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
 				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count+1);

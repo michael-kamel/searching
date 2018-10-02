@@ -2,6 +2,7 @@ package searching.problems;
 
 public interface SearchAction {
 	public long getCost();
+	
 	public static final class NoAction implements SearchAction {
 		public NoAction() {
 			super();
