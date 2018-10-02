@@ -133,8 +133,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	}
 
 	@Override
-	public GOTSearchState getNewState(SearchTreeNode<GOTSearchState> node, GOTSearchAction action) {
-		GOTSearchState state = node.getCurrentState();
+	public GOTSearchState getNewState(GOTSearchState state, GOTSearchAction action) {
 		Tuple<Integer, Integer> location = state.getLocation();
 		int newRow = location.getLeft();
 		int newColumn = location.getRight();
@@ -173,7 +172,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		Tuple<Integer, Integer> newLocation = new Tuple<Integer, Integer>(newRow, newColumn);
 		builder.setLocation(newLocation);
 		
-		if(newLocation.equals(dragonStoneLocation))
+		if(newLocation.equals(dragonStoneLocation) && action != GOTSearchAction.STAB)
 			builder.setDragonStoneCarried(maxDragonStones);
 			
 		return builder.build();

@@ -18,10 +18,14 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract T getInitialState();
 
-	public abstract T getNewState(SearchTreeNode<T> node, V action);
+	public abstract T getNewState(T node, V action);
 	
 	public Iterable<V> getPossibleActions() {
 		return this.possibleActions;
+	}
+	
+	public long pathCost(SearchTreeNode<T> node) {
+		return node.getCost();
 	}
 	
 	public Iterable<SearchTreeNode<T>> expand(SearchTreeNode<T> nodeToCheck) {
@@ -33,7 +37,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 			@Override
 			public void accept(V action) {
 				if(canTransition(currentState, action)) {
-					T newState = getNewState(nodeToCheck, action);
+					T newState = getNewState(nodeToCheck.getCurrentState(), action);
 					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), nodeToCheck.getCost()+action.getCost(), newState, action, nodeToCheck.getDepth()+1);   
 					newNodes.add(newNode);
 				}

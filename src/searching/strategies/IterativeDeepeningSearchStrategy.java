@@ -39,4 +39,8 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 		
 		return Optional.of(stack.pop());
 	}
+	
+	public void setDepth(int depth) {
+		this.currentMaxDepth = depth;
+	}
 }
