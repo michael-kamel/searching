@@ -51,7 +51,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract void visualize();
 	
-	protected abstract void visualize(T state);
+	public abstract void visualize(T state);
 	
 	protected abstract long getActionCost(V action);
 }

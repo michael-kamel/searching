@@ -1,16 +1,16 @@
 package searching.problems.examples;
 
-public enum GameObject{
+public enum GOTGameObject{
 	JON_SNOW('J'),
 	WHITE_WALKER('W'),
 	OBSTACLE('O'),
 	DRAGON_STONE('D'),
-	EMPTY('E'),
+	EMPTY('.'),
 	DEAD_WHITE_WALKER('X');
 	
 	private final char character;
 	
-	private GameObject(char character) {
+	private GOTGameObject(char character) {
 		this.character = character;
 	}
 	
