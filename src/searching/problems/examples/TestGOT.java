@@ -24,7 +24,7 @@ public class TestGOT {
 	
 	public static void ucsGOTSearchProblemTest() {
 		try {
-			GOTSearchProblem problem = new GOTSearchProblem(6, 6, 4, 9, 4);
+			SaveWesteros problem = new SaveWesteros(6, 6, 4, 9, 4);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -80,7 +80,7 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 2);
-			GOTSearchProblem problem = new GOTSearchProblem(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity);
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);

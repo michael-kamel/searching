@@ -9,7 +9,8 @@ import searching.problems.SearchState;
 import searching.strategies.SearchStrategy;
 
 public class SearchAgent<T extends SearchState, V extends SearchAction> {
-	private int maxTreeNodes; //control to avoid running forever
+	//sets an upper-bound to the number of expanded nodes to avoid running forever
+	private int maxTreeNodes; 
 	
 	public SearchAgent(int maxTreeNodes) {
 		this.maxTreeNodes = maxTreeNodes;

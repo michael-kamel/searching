@@ -10,7 +10,7 @@ import searching.utils.Geomtry;
 import searching.utils.Tuple;
 import searching.utils.ObjectUtils;
 
-public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAction> {
+public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction> {
 	private GOTGameObject[][] grid;
 	private int gridRows;
 	private int gridColumns;
@@ -23,7 +23,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 	private int columnLowerBound;
 	private int maxPathCost;
 	
-	public GOTSearchProblem(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
+	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
 		super(GOTSearchAction.getAll());
 		this.gridRows = height;
 		this.gridColumns = width;
@@ -36,7 +36,7 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		calculateLongestPathCost();
 	}
 	
-	public GOTSearchProblem(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
+	public SaveWesteros(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
 			ArrayList<Tuple<Integer,Integer>> obstacleLocations, Tuple<Integer, Integer> dragonStoneLocation,
 			int maxDragonStones) throws SearchProblemException {
 		super(GOTSearchAction.getAll());

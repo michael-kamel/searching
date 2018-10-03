@@ -17,7 +17,7 @@ public class GOTSearchProblemHeuristics {
 	 * @param problem the problem to create a heuristic for
 	 * @return {@link HeuristicFunction}
 	 */
-	public static HeuristicFunction<GOTSearchState> stabHeuristic(GOTSearchProblem problem) {
+	public static HeuristicFunction<GOTSearchState> stabHeuristic(SaveWesteros problem) {
 		return state -> {
 			if(problem.goalTest(state)) // centering
 				return 0;
@@ -41,7 +41,7 @@ public class GOTSearchProblemHeuristics {
 	 * @param problem the problem to create a heuristic for
 	 * @return {@link HeuristicFunction}
 	 */
-	public static HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic(GOTSearchProblem problem) {
+	public static HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic(SaveWesteros problem) {
 		return state -> {
 			if(problem.goalTest(state)) // centering
 				return 0;
@@ -64,7 +64,7 @@ public class GOTSearchProblemHeuristics {
 	 * @param problem the problem to create a heuristic for
 	 * @return {@link HeuristicFunction}
 	 */
-	public static HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeuristic(GOTSearchProblem problem) {
+	public static HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeuristic(SaveWesteros problem) {
 		return HeuristicFunctions.dominating(furthestWhiteWalkerHeuristic(problem), stabHeuristic(problem));
 	}
 	
@@ -76,7 +76,7 @@ public class GOTSearchProblemHeuristics {
 	 * @param problem the problem to create a heuristic for
 	 * @return {@link HeuristicFunction}
 	 */
-	public static HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic(GOTSearchProblem problem) {
+	public static HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic(SaveWesteros problem) {
 		return state -> {
 			if(problem.goalTest(state)) // centering
 				return 0;
