@@ -6,15 +6,18 @@ import java.util.Stack;
 import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
-public class IterativeDeepeningSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {
+public class IterativeDeepeningSearchStrategy<T extends SearchState> 
+		extends UninformedSearchStrategy<T> {
 	private final Stack<SearchTreeNode<T>> stack;
-	private int currentMaxDepth = 0;
-	private boolean addedFirstNode = false;
+	private int currentMaxDepth;
+	private boolean addedFirstNode;
 	private SearchTreeNode<T> rootNode;
-	private boolean hasMoreDepth;
+	private boolean hasMoreDepth; //checks if incrementing the depth introduces new nodes
 	
 	public IterativeDeepeningSearchStrategy() {
 		this.stack = new Stack<SearchTreeNode<T>>();
+		this.currentMaxDepth = 0;
+		this.addedFirstNode = false;
 		this.hasMoreDepth = false;
 	}
 
@@ -45,14 +48,10 @@ public class IterativeDeepeningSearchStrategy<T extends SearchState> extends Uni
 		return Optional.of(stack.pop());
 	}
 	
-	public void setDepth(int depth) {
-		this.currentMaxDepth = depth;
-	}
-
 	private void resetProblem() {
-		currentMaxDepth++;
-		stack.clear();
-		stack.push(rootNode);
+		this.currentMaxDepth++;
+		this.stack.clear();
+		this.stack.push(this.rootNode);
 		this.hasMoreDepth = false;
 	}
 }

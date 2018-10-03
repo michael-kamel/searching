@@ -15,10 +15,13 @@ public class GreedySearchStrategy<T extends SearchState> extends InformedSearchS
 		this.queue = new PriorityQueue<SearchTreeNode<T>>(new Comparator<SearchTreeNode<T>>() {
 			@Override
 			public int compare(SearchTreeNode<T> firstNode, SearchTreeNode<T> secondNode) {
-				long firstNodeHeuristicCost = getHeuristic().expectedCostToSolution(firstNode.getCurrentState());
-				long secondNodeHeuristicCost = getHeuristic().expectedCostToSolution(secondNode.getCurrentState());
+				long firstNodeHeuristicCost = heuristic.expectedCostToSolution(
+						firstNode.getCurrentState());
+				long secondNodeHeuristicCost = heuristic.expectedCostToSolution(
+						secondNode.getCurrentState());
 				
-				return firstNodeHeuristicCost > secondNodeHeuristicCost? 1 : firstNodeHeuristicCost == secondNodeHeuristicCost ? 0 : -1;
+				return firstNodeHeuristicCost > secondNodeHeuristicCost? 1 : 
+					firstNodeHeuristicCost == secondNodeHeuristicCost ? 0 : -1;
 			}
 		});
 	}

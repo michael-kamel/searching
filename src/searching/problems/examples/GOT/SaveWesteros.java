@@ -1,11 +1,11 @@
-package searching.problems.examples;
+package searching.problems.examples.GOT;
 
 import java.util.ArrayList;
 import java.util.Random;
 import searching.exceptions.SearchProblemException;
 import searching.exceptions.SearchProblemGameConstructionConstraintsViolation;
 import searching.problems.SearchProblem;
-import searching.problems.examples.GOTSearchState.GOTSearchStateBuilder;
+import searching.problems.examples.GOT.GOTSearchState.GOTSearchStateBuilder;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
 import searching.utils.ObjectUtils;

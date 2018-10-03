@@ -1,4 +1,4 @@
-package searching.problems.examples;
+package searching.problems.examples.GOT;
 
 import java.util.Arrays;
 import searching.problems.SearchAction;

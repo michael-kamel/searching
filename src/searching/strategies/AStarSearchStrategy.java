@@ -15,14 +15,17 @@ public class AStarSearchStrategy<T extends SearchState> extends InformedSearchSt
 		this.queue = new PriorityQueue<SearchTreeNode<T>>(new Comparator<SearchTreeNode<T>>() {
 			@Override
 			public int compare(SearchTreeNode<T> firstNode, SearchTreeNode<T> secondNode) {
-				long firstNodeCost = firstNode.getCost();
-				long secondNodeCost = secondNode.getCost();
-				long firstNodeHeuristicCost = getHeuristic().expectedCostToSolution(firstNode.getCurrentState());
-				long secondNodeHeuristicCost = getHeuristic().expectedCostToSolution(secondNode.getCurrentState());
+				long firstNodePathCost = firstNode.getCost();
+				long secondNodePathCost = secondNode.getCost();
+				long firstNodeHeuristicCost = heuristic.expectedCostToSolution(
+						firstNode.getCurrentState());
+				long secondNodeHeuristicCost = heuristic.expectedCostToSolution(
+						secondNode.getCurrentState());
 				
-				long firstNodeTotalCost = firstNodeCost + firstNodeHeuristicCost;
-				long secondNodeTotalCost = secondNodeCost + secondNodeHeuristicCost;
-				return firstNodeTotalCost > secondNodeTotalCost ? 1 : firstNodeTotalCost == secondNodeTotalCost ? 0 : -1;
+				long firstNodeTotalCost = firstNodePathCost + firstNodeHeuristicCost;
+				long secondNodeTotalCost = secondNodePathCost + secondNodeHeuristicCost;
+				return firstNodeTotalCost > secondNodeTotalCost ? 1 : 
+					(firstNodeTotalCost == secondNodeTotalCost ? 0 : -1);
 			}
 		});
 	}

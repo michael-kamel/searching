@@ -1,4 +1,4 @@
-package searching.problems.examples;
+package searching.problems.examples.GOT;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,6 @@ public class GOTSearchState extends SearchState {
 	
 	public GOTSearchState(int dragonGlassCarried, Tuple<Integer, Integer> location, 
 			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus, Boolean[][] currentlyExplored) {
-		super();
 		this.dragonGlassCarried = dragonGlassCarried;
 		this.location = location;
 		this.whiteWalkerStatus = whiteWalkerStatus;
@@ -40,6 +39,7 @@ public class GOTSearchState extends SearchState {
 		return this.currentlyExplored;
 	}
 
+	@Override
 	public String toString() {
 		String str = "";
 		str += "Dragon Stone: " + this.dragonGlassCarried + " \n";
@@ -61,6 +61,7 @@ public class GOTSearchState extends SearchState {
 			this.dragonStoneCarried = dragonStoneCarried;
 			return this;
 		}
+		
 		public GOTSearchStateBuilder setLocation(Tuple<Integer, Integer> location) {
 			this.location = location; 
 			return this;
@@ -77,7 +78,8 @@ public class GOTSearchState extends SearchState {
 		}
 		
 		public GOTSearchState build() {
-			return new GOTSearchState(dragonStoneCarried, location, whiteWalkerStatus, currentlyExplored);
+			return new GOTSearchState(this.dragonStoneCarried, this.location, this.whiteWalkerStatus, 
+					this.currentlyExplored);
 		}
 	}
 }

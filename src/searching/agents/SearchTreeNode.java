@@ -6,10 +6,10 @@ import searching.problems.SearchAction;
 import searching.problems.SearchState;
 
 public class SearchTreeNode<T extends SearchState> implements Comparable<SearchTreeNode<T>> {
-	private final Optional<SearchTreeNode<T>> parent; // The parent of the node in the tree
-	private final long cost; // The cost from the root of the tree up to this node
+	private final Optional<SearchTreeNode<T>> parent; //Parent of node
+	private final long cost; // Path cost from the root of the tree until this node
 	private final T state; // The current state of the node
-	private final SearchAction action; // The action made to reach this state from the previous
+	private final SearchAction action; // The action made to reach this node from its parent
 	private final int depth; //depth from root to this node; root depth==0
 	
 	public SearchTreeNode(Optional<SearchTreeNode<T>> parent, long cost, T state, SearchAction action, int depth) {

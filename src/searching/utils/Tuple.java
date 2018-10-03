@@ -17,11 +17,13 @@ public class Tuple<L, R> {
 		return this.right;
 	}
 	
+	public boolean equals(Tuple<L, R> tuple) {
+		return this.left.equals(tuple.getLeft()) && this.right.equals(tuple.getRight());
+	}
+
+	@Override
 	public String toString() {
 		return this.left + " " + this.right;
 	}
 	
-	public boolean equals(Tuple<L, R> tuple) {
-		return this.left == tuple.getLeft() && this.right == tuple.getRight();
-	}
 }

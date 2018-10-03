@@ -1,4 +1,4 @@
-package searching.problems.examples;
+package searching.problems.examples.GOT;
 
 public enum GOTGameObject{
 	JON_SNOW('J'),

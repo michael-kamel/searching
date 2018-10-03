@@ -4,13 +4,13 @@ import searching.problems.SearchState;
 
 public abstract class InformedSearchStrategy<T extends SearchState> extends SearchStrategy<T> {
 	
-	private final HeuristicFunction<T> heuristic;
+	private final HeuristicFunction<T> heuristicFunction;
 	
-	public InformedSearchStrategy(HeuristicFunction<T> heuristic) {
-		this.heuristic = heuristic;
+	public InformedSearchStrategy(HeuristicFunction<T> heuristicFunction) {
+		this.heuristicFunction = heuristicFunction;
 	}
 	
 	protected HeuristicFunction<T> getHeuristic() {
-		return this.heuristic;
+		return this.heuristicFunction;
 	}
 }

@@ -19,22 +19,24 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 	public SearchProblemSolution<T, V> search(SearchProblem<T, V> problem, SearchStrategy<T> searchStrategy) {
 		SearchTreeNode<T> rootNode = new SearchTreeNode<T>(Optional.empty(), 0, 
 				problem.getInitialState(), SearchAction.NoAction(), 0);
+		
 		searchStrategy.addNode(rootNode);
-		int count = 0; //number of expanded nodes, so far
+		int count = 0; //number of _expanded_ nodes, so far
 		
 		while(count <= maxTreeNodes) {
-			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();  //node we get from dequeuing/popping
+			//gets the next node; dequeuing/popping (the data structure is strategy-dependant)
+			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();  
 			
-			if(!nodeToCheck.isPresent())
-				return SearchProblemSolution.NoSolution(problem, count);
+			if(!nodeToCheck.isPresent()) //emptied the data structure; no more nodes to expand 
+				return SearchProblemSolution.NoSolution(problem, count); 
 			
 			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
 				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count);
 			
-			searchStrategy.addNodes(problem.expand(nodeToCheck.get()));
-			count++;
+			searchStrategy.addNodes(problem.expand(nodeToCheck.get()));//pushes/queues nodes
+			count++; 
 		}
 		
-		return SearchProblemSolution.Bottom(problem, count);
+		return SearchProblemSolution.Bottom(problem, count); //when resources are exhausted
 	}
 }

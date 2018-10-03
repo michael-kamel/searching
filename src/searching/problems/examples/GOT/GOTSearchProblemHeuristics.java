@@ -1,4 +1,4 @@
-package searching.problems.examples;
+package searching.problems.examples.GOT;
 
 import searching.problems.HeuristicFunctions;
 import searching.strategies.HeuristicFunction;
