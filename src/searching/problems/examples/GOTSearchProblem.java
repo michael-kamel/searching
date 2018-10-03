@@ -126,15 +126,15 @@ public class GOTSearchProblem extends SearchProblem<GOTSearchState, GOTSearchAct
 		int currentColumnLowerBound = Integer.MAX_VALUE;
 		
 		currentRowLowerBound = this.whiteWalkerLocations.stream().
-				mapToInt(location -> location.getLeft()).min().orElseGet(() -> Integer.MAX_VALUE);
+				mapToInt(location -> location.getLeft()).min().orElse(Integer.MAX_VALUE);
 		currentRowLowerBound = Math.min(currentRowLowerBound, this.obstacleLocations.stream().
-				mapToInt(location -> location.getLeft()).min().orElseGet(() -> Integer.MAX_VALUE));
+				mapToInt(location -> location.getLeft()).min().orElse(Integer.MAX_VALUE));
 		currentRowLowerBound = Math.min(currentRowLowerBound, this.dragonStoneLocation.getLeft());
 		
 		currentColumnLowerBound = this.whiteWalkerLocations.stream().
-				mapToInt(location -> location.getRight()).min().orElseGet(() -> Integer.MAX_VALUE);
+				mapToInt(location -> location.getRight()).min().orElse(Integer.MAX_VALUE);
 		currentColumnLowerBound = Math.min(currentColumnLowerBound, this.obstacleLocations.stream().
-				mapToInt(location -> location.getRight()).min().orElseGet(() -> Integer.MAX_VALUE));
+				mapToInt(location -> location.getRight()).min().orElse(Integer.MAX_VALUE));
 		currentColumnLowerBound = Math.min(currentColumnLowerBound, this.dragonStoneLocation.getRight());
 		
 		this.rowLowerBound = Math.max(currentRowLowerBound - 1, 0);

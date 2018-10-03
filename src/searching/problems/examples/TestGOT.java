@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 import searching.agents.SearchAgent;
 import searching.exceptions.SearchProblemException;
-import searching.problems.GoalTest;
 import searching.problems.SearchProblemSolution;
 import searching.strategies.AStarSearchStrategy;
 import searching.strategies.BreadthFirstSearchStrategy;
 import searching.strategies.DepthFirstSearchSearchStrategy;
+import searching.strategies.GreedySearchStrategy;
 import searching.strategies.HeuristicFunction;
 import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
@@ -18,14 +18,20 @@ import searching.utils.Tuple;
 
 public class TestGOT {
 	public static void main(String[] args) {
-		ucsGOTSearchProblemTest();
-		//ucsGOTHardCodedSearchProblemTest();
+		//ucsGOTSearchProblemTest();
+		ucsGOTHardCodedSearchProblemTest();
 	}
 	
 	public static void ucsGOTSearchProblemTest() {
 		try {
 			GOTSearchProblem problem = new GOTSearchProblem(6, 6, 4, 9, 4);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
 			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
 			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
@@ -56,33 +62,40 @@ public class TestGOT {
 	public static void ucsGOTHardCodedSearchProblemTest() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
-			whiteWalkers.add(new Tuple<Integer, Integer>(0, 5));
 			whiteWalkers.add(new Tuple<Integer, Integer>(1, 2));
-			whiteWalkers.add(new Tuple<Integer, Integer>(2, 0));
-			whiteWalkers.add(new Tuple<Integer, Integer>(5, 3));
+			whiteWalkers.add(new Tuple<Integer, Integer>(1, 4));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 3));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 4));
 			
 			ArrayList<Tuple<Integer, Integer>> obstacleLocations = new ArrayList<Tuple<Integer, Integer>>();
-			obstacleLocations.add(new Tuple<Integer, Integer>(0, 3));
-			obstacleLocations.add(new Tuple<Integer, Integer>(0, 4));
+			obstacleLocations.add(new Tuple<Integer, Integer>(0, 0));
+			obstacleLocations.add(new Tuple<Integer, Integer>(0, 2));
+			obstacleLocations.add(new Tuple<Integer, Integer>(1, 5));
 			obstacleLocations.add(new Tuple<Integer, Integer>(2, 1));
+			obstacleLocations.add(new Tuple<Integer, Integer>(2, 2));
 			obstacleLocations.add(new Tuple<Integer, Integer>(2, 5));
-			obstacleLocations.add(new Tuple<Integer, Integer>(3, 0));
-			obstacleLocations.add(new Tuple<Integer, Integer>(3, 5));
-			obstacleLocations.add(new Tuple<Integer, Integer>(4, 0));
-			obstacleLocations.add(new Tuple<Integer, Integer>(4, 5));
+			obstacleLocations.add(new Tuple<Integer, Integer>(3, 1));
+			obstacleLocations.add(new Tuple<Integer, Integer>(4, 4));
 			obstacleLocations.add(new Tuple<Integer, Integer>(5, 2));
 			
 			int dragonGlassCapacity = 4;
-			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(2, 3);
+			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 2);
 			GOTSearchProblem problem = new GOTSearchProblem(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
 			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
 			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
 			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState>(stabHeurisitc);
+			SearchStrategy<GOTSearchState> greedySearchStrategy = new GreedySearchStrategy<GOTSearchState>(nearestWhiteWalkerHeuristic);
+			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState>(furthestWhiteWalkerAndStabHeurisitc);
 			problem.visualize();
 			System.out.println("Max cost: " + problem.getMaxPathCost());
 			System.in.read();
