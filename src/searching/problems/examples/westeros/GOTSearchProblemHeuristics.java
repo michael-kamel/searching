@@ -85,12 +85,13 @@ public class GOTSearchProblemHeuristics {
 			
 			Tuple<Integer, Integer> currentLocation = state.getLocation();
 			
-			long maxDistance = state.getWhiteWalkerStatus().stream()
+			long minDistance = state.getWhiteWalkerStatus().stream()
 				.filter(whiteWalkerState -> !whiteWalkerState.getRight())
 				.mapToLong(whiteWalkerState -> Geomtry.ManhattanDistance(currentLocation, whiteWalkerState.getLeft()))
 				.min().orElse(0);
 			
-			return (maxDistance - 1) + problem.getActionCost(GOTSearchAction.STAB);
+			return ((minDistance - 1) * problem.getActionCost(GOTSearchAction.MOVE_DOWN))
+				+ problem.getActionCost(GOTSearchAction.STAB);
 		};
 	}
 }

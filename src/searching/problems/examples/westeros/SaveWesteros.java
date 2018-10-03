@@ -23,7 +23,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int columnLowerBound;
 	private int maxPathCost;
 	
-	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
+	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) 
+			throws SearchProblemException {
 		super(GOTSearchAction.getAll());
 		this.gridRows = height;
 		this.gridColumns = width;
@@ -58,19 +59,18 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		if(height < 4)
 			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
 		
-		grid = new GOTGameObject[height][width];
+		this.grid = new GOTGameObject[height][width];
 		
 		for(int i = 0; i < height; i++)
 			for(int j = 0; j < width; j++)
-				grid[i][j] = GOTGameObject.EMPTY;
+				this.grid[i][j] = GOTGameObject.EMPTY;
 		
-		grid[height-1][width-1] = GOTGameObject.JON_SNOW;
+		this.grid[height-1][width-1] = GOTGameObject.JON_SNOW;
 	}
 	
 	private void genGrid(int width, int height, ArrayList<Tuple<Integer, Integer>> whiteWalkersLocations,
 			ArrayList<Tuple<Integer, Integer>> obstacleLocations,
 			Tuple<Integer, Integer> dragonStoneLocation) throws SearchProblemGameConstructionConstraintsViolation {
-		
 		initGrid(width, height);
 		whiteWalkersLocations.forEach(whiteWalkerLocation -> {
 			this.grid[whiteWalkerLocation.getLeft()][whiteWalkerLocation.getRight()] = GOTGameObject.WHITE_WALKER;
@@ -83,8 +83,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.grid[dragonStoneLocation.getLeft()][dragonStoneLocation.getRight()] = GOTGameObject.DRAGON_STONE;	
 	}
 
-	private void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) throws SearchProblemGameConstructionConstraintsViolation {
-		
+	private void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) 
+			throws SearchProblemGameConstructionConstraintsViolation {
 		initGrid(width, height);
 		Random rnd = new Random();
 		boolean dragonStonePlaced = false;
@@ -121,6 +121,13 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		}
 	}
 	
+	/**
+	 * redefines the grid's bounds from the left/top sides so as not to allow transitions from one state to another
+	 * if the entire grid, with white walkers, obstacles, DragonStone, etc. is centered in a part(sub-grid)
+	 * This reduces the number of expanded nodes, instead of expanding nodes with move actions that do not
+	 * represent any importance (move to empty part of the grid) 
+	 * we subtract 1 from this boundary, to handle specific cases 
+	 */
 	private void calculateLowerBounds() {
 		int currentRowLowerBound = Integer.MAX_VALUE;
 		int currentColumnLowerBound = Integer.MAX_VALUE;
@@ -137,7 +144,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 				mapToInt(location -> location.getRight()).min().orElse(Integer.MAX_VALUE));
 		currentColumnLowerBound = Math.min(currentColumnLowerBound, this.dragonStoneLocation.getRight());
 		
-		this.rowLowerBound = Math.max(currentRowLowerBound - 1, 0);
+		//maxes with zero to avoid negative values (negative values; outOfBoundException)
+		this.rowLowerBound = Math.max(currentRowLowerBound - 1, 0); 		
 		this.columnLowerBound = Math.max(currentColumnLowerBound - 1, 0);
 	}
 	
@@ -150,13 +158,24 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return this.grid[row][column];
 	}
 	
+	/**
+	 * checks if this is a cell JON SNOW can step into (no obstacle - no alive WW)
+	 * @param idx
+	 * @return boolean
+	 */
 	private boolean isPositionCell(int idx) {
-		GOTGameObject content = getGridCellContent(idx);
+		GOTGameObject content = this.getGridCellContent(idx);
 		if(content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
 			return false;
 		return true;
 	}
 	
+	/**
+	 * checks if the cell if it's a cell we can stab from (adjacent to an alive white walker) 
+	 * or a dragon stone
+	 * @param idx
+	 * @return
+	 */
 	private boolean isTargetCell(int idx) {
 		GOTGameObject content = getGridCellContent(idx);
 		if(content == GOTGameObject.DRAGON_STONE)
@@ -166,11 +185,17 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		int maxCount = boundedColumns * boundedRows;
 		
 		return ((idx % boundedColumns != 1) && (idx > 0) && getGridCellContent(idx - 1) == GOTGameObject.WHITE_WALKER)
-				|| ((idx % boundedColumns != boundedColumns - 1) && (idx + 1 < maxCount) && getGridCellContent(idx + 1) == GOTGameObject.WHITE_WALKER)
-				|| ((idx + boundedColumns < maxCount) && getGridCellContent(idx + boundedColumns) == GOTGameObject.WHITE_WALKER)
-				|| ((idx - boundedColumns >= 0) && getGridCellContent(idx - boundedColumns) == GOTGameObject.WHITE_WALKER);
+			|| ((idx % boundedColumns != boundedColumns - 1) && (idx + 1 < maxCount) && getGridCellContent(idx + 1) == GOTGameObject.WHITE_WALKER)
+			|| ((idx + boundedColumns < maxCount) && getGridCellContent(idx + boundedColumns) == GOTGameObject.WHITE_WALKER)
+			|| ((idx - boundedColumns >= 0) && getGridCellContent(idx - boundedColumns) == GOTGameObject.WHITE_WALKER);
 	}
 	
+	/**
+	 * checks if two cells are adjacent, given their indices (not locations)
+	 * @param firstIdx
+	 * @param secondIdx
+	 * @return
+	 */
 	private boolean isAdjacentCellIdx(int firstIdx, int secondIdx) {
 		int diff = Math.abs(firstIdx - secondIdx);
 		if(diff == 1) {
@@ -184,12 +209,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return false;
 	}
 	
-	public boolean isCell(int idx, GOTGameObject cellType) {
-		GOTGameObject content = getGridCellContent(idx);
-		return content.equals(cellType);
-	}
 	/**
-	 * Floyd Warshall
+	 * Floyd Warshall: calculates the distance between any two nodes in the graph
+	 * 
+	 * 
 	 */
 	private void calculateLongestPathCost() {
 		int maxCost = 0;
@@ -198,7 +221,9 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		int boundedColumnSize = this.gridColumns - this.columnLowerBound;
 		int nodesCount = boundedRowSize * boundedColumnSize;
 		int[][] cost = new int[nodesCount][nodesCount];
-		
+		/*
+		 *  Floyd's Initialization Step
+		 * */
 		for(int i = 0; i < nodesCount; i++)
 			for(int j = 0; j < nodesCount; j++)
 				if(i == j)
@@ -207,8 +232,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 					if(this.isPositionCell(i) && this.isPositionCell(j) && this.isAdjacentCellIdx(i, j))
 						cost[i][j] = 1;
 					else
-						cost[i][j] = Integer.MAX_VALUE;
-		
+						cost[i][j] = Integer.MAX_VALUE; //initializes nodes paths costs to infinity
+
+		/*
+		 *  All-pairs shortest path Algorithm
+		 * */
 		for(int nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++)
 			for(int nodeI = 0; nodeI < nodesCount; nodeI++)
 				for(int nodeJ = 0; nodeJ < nodesCount; nodeJ++) {
@@ -217,11 +245,15 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 						newCost = Integer.MAX_VALUE;
 					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
 				}	
-		
+		/**
+		 * calculates the maxium path cost between any two reachable-from-each-other target cells
+		 * where target cell = {DragonStone, Cell JS can stab from}
+		 */
 		for(int i = 0; i < nodesCount; i++)
 			for(int j = 0; j < nodesCount; j++)
 				if(i != j && (isTargetCell(i) && isTargetCell(j)))
 					if(cost[i][j] != Integer.MAX_VALUE)
+					//two target cells are not reachable from each other; infinite cost
 						maxCost = Math.max(maxCost, cost[i][j]);
 					
 		this.maxPathCost = maxCost;
