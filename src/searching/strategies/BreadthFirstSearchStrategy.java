@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
 
+import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
 public class BreadthFirstSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {

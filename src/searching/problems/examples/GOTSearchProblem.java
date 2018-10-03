@@ -1,24 +1,14 @@
 package searching.problems.examples;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
-import searching.agents.SearchAgent;
 import searching.exceptions.SearchProblemException;
 import searching.exceptions.SearchProblemGameConstructionConstraintsViolation;
-import searching.problems.SearchProblem;
-import searching.problems.SearchProblemSolution;
 import searching.problems.SearchProblemWithHeuristic;
 import searching.problems.examples.GOTSearchState.GOTSearchStateBuilder;
-import searching.strategies.AStarSearchStrategy;
-import searching.strategies.BreadthFirstSearchStrategy;
-import searching.strategies.DepthFirstSearchSearchStrategy;
-import searching.strategies.IterativeDeepeningSearchStrategy;
-import searching.strategies.SearchStrategy;
-import searching.strategies.UniformCostSearchStrategy;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
+import searching.utils.ObjectUtils;
 
 public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState, GOTSearchAction> {
 	private GameObject[][] grid;
@@ -29,6 +19,9 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 	private Tuple<Integer, Integer> dragonStoneLocation;
 	private int whiteWalkersCount;
 	private int maxDragonStones;
+	private int rowLowerBound;
+	private int columnLowerBound;
+	private int maxPathCost;
 	
 	public GOTSearchProblem(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) throws SearchProblemException {
 		super(GOTSearchAction.getAll());
@@ -39,6 +32,8 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
 		this.maxDragonStones = maxDragonStones;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
+		calculateLowerBounds();
+		calculateLongestPathCost();
 	}
 	
 	public GOTSearchProblem(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
@@ -53,6 +48,8 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		this.maxDragonStones = maxDragonStones;
 		this.dragonStoneLocation = dragonStoneLocation;
 		genGrid(width, height, whiteWalkerLocations, obstacleLocations, dragonStoneLocation);
+		calculateLowerBounds();
+		calculateLongestPathCost();
 	}
 	
 	private void initGrid(int width, int height) throws SearchProblemGameConstructionConstraintsViolation {
@@ -124,8 +121,130 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		}
 	}
 	
+	private void calculateLowerBounds() {
+		int currentRowLowerBound = Integer.MAX_VALUE;
+		int currentColumnLowerBound = Integer.MAX_VALUE;
+		
+		currentRowLowerBound = this.whiteWalkerLocations.stream().
+				mapToInt(location -> location.getLeft()).min().orElseGet(() -> Integer.MAX_VALUE);
+		currentRowLowerBound = Math.min(currentRowLowerBound, this.obstacleLocations.stream().
+				mapToInt(location -> location.getLeft()).min().orElseGet(() -> Integer.MAX_VALUE));
+		currentRowLowerBound = Math.min(currentRowLowerBound, this.dragonStoneLocation.getLeft());
+		
+		currentColumnLowerBound = this.whiteWalkerLocations.stream().
+				mapToInt(location -> location.getRight()).min().orElseGet(() -> Integer.MAX_VALUE);
+		currentColumnLowerBound = Math.min(currentColumnLowerBound, this.obstacleLocations.stream().
+				mapToInt(location -> location.getRight()).min().orElseGet(() -> Integer.MAX_VALUE));
+		currentColumnLowerBound = Math.min(currentColumnLowerBound, this.dragonStoneLocation.getRight());
+		
+		this.rowLowerBound = Math.max(currentRowLowerBound - 1, 0);
+		this.columnLowerBound = Math.max(currentColumnLowerBound - 1, 0);
+	}
+	
+	private GameObject getGridCellContent(int idx) {
+		int normalizedColumnCount = this.gridColumns - this.columnLowerBound;
+		int normalizedRow = idx / normalizedColumnCount;
+		int normalizedColumn = idx % normalizedColumnCount;
+		int row = normalizedRow + this.rowLowerBound;
+		int column = normalizedColumn + this.columnLowerBound;
+		return this.grid[row][column];
+	}
+	
+	private boolean isPositionCell(int idx) {
+		GameObject content = getGridCellContent(idx);
+		if(content == GameObject.WHITE_WALKER || content == GameObject.OBSTACLE || content == GameObject.DEAD_WHITE_WALKER)
+			return false;
+		return true;
+	}
+	
+	private boolean isTargetCell(int idx) {
+		GameObject content = getGridCellContent(idx);
+		if(content == GameObject.DRAGON_STONE || content == GameObject.JON_SNOW)
+			return true;
+		int boundedColumns = this.gridColumns - this.columnLowerBound;
+		int boundedRows = this.gridRows - this.rowLowerBound;
+		int maxCount = boundedColumns * boundedRows;
+		
+		return ((idx % boundedColumns != 1) && (idx > 0) && getGridCellContent(idx - 1) == GameObject.WHITE_WALKER)
+				|| ((idx % boundedColumns != boundedColumns - 1) && (idx + 1 < maxCount) && getGridCellContent(idx + 1) == GameObject.WHITE_WALKER)
+				|| ((idx + boundedColumns < maxCount) && getGridCellContent(idx + boundedColumns) == GameObject.WHITE_WALKER)
+				|| ((idx - boundedColumns >= 0) && getGridCellContent(idx - boundedColumns) == GameObject.WHITE_WALKER);
+	}
+	
+	private boolean isAdjacentCellIdx(int firstIdx, int secondIdx) {
+		int diff = Math.abs(firstIdx - secondIdx);
+		if(diff == 1) {
+			int columnCount = this.gridColumns - this.columnLowerBound;
+			int firstColumn = firstIdx / columnCount;
+			int secondColumn = secondIdx / columnCount;
+			return firstColumn == secondColumn;
+		}
+		if(diff == this.gridColumns - this.columnLowerBound)
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Floyd Warshall
+	 */
+	private void calculateLongestPathCost() {
+		int maxCost = 0;
+		
+		int boundedRowSize = this.gridRows - this.rowLowerBound;
+		int boundedColumnSize = this.gridColumns - this.columnLowerBound;
+		int nodesCount = boundedRowSize * boundedColumnSize;
+		int[][] cost = new int[nodesCount][nodesCount];
+		
+		for(int i = 0; i < nodesCount; i++)
+			for(int j = 0; j < nodesCount; j++)
+				if(i == j)
+					cost[i][j] = 0;
+				else
+					if(this.isPositionCell(i) && this.isPositionCell(j) && this.isAdjacentCellIdx(i, j))
+						cost[i][j] = 1;
+					else
+						cost[i][j] = Integer.MAX_VALUE;
+		
+		for(int nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++)
+			for(int nodeI = 0; nodeI < nodesCount; nodeI++)
+				for(int nodeJ = 0; nodeJ < nodesCount; nodeJ++) {
+					int newCost = cost[nodeI][nodeIdx] + cost[nodeIdx][nodeJ];
+					if(newCost < 0)
+						newCost = Integer.MAX_VALUE;
+					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
+				}	
+		
+		for(int i = 0; i < nodesCount; i++)
+			for(int j = 0; j < nodesCount; j++)
+				if(i != j && isTargetCell(i) && isTargetCell(j))
+					if(cost[i][j] != Integer.MAX_VALUE)
+						maxCost = Math.max(maxCost, cost[i][j]);
+					
+		this.maxPathCost = maxCost;
+	}
+	
+	public long getMaxPathCost() {
+		return this.maxPathCost;
+	}
+	
 	public long getHeuristicCost(GOTSearchState state) {
-		return 0;
+		int whiteWalkersDead = (int) state.getWhiteWalkerStatus().stream()
+			.filter(whiteWalkerState -> !whiteWalkerState.getRight())
+			.count();
+		
+		return whiteWalkersDead;
+	}
+	
+	@Override
+	protected long getActionCost(GOTSearchAction action) {
+		switch (action) {
+			case MOVE_DOWN:
+			case MOVE_LEFT:
+			case MOVE_RIGHT:
+			case MOVE_UP: return 1;
+			case STAB: return this.maxPathCost - 2;
+			default: return 0;
+		}
 	}
 	
 	@Override
@@ -135,7 +254,10 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		for(Tuple<Integer, Integer> point : this.whiteWalkerLocations)
 			whiteWalkersStatus.add(new Tuple<Tuple<Integer, Integer>, Boolean>(point, false));
 		
-		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus);
+		Boolean[][] currentlyExplored = new Boolean[this.gridRows][this.gridColumns];
+		currentlyExplored[gridRows-1][gridColumns-1] = true;
+		
+		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus, currentlyExplored);
 	}
 
 	@Override
@@ -178,6 +300,18 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		Tuple<Integer, Integer> newLocation = new Tuple<Integer, Integer>(newRow, newColumn);
 		builder.setLocation(newLocation);
 		
+		Boolean[][] newCurrentlyExplored;
+		if(!action.equals(GOTSearchAction.STAB))
+			if(newLocation.equals(this.dragonStoneLocation))
+				newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
+			else
+				newCurrentlyExplored = ObjectUtils.clone2DArray(state.getCurrentlyExplored());
+		 else
+			newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
+		
+		newCurrentlyExplored[newRow][newColumn] = true;
+		builder.setCurrentlyExplored(newCurrentlyExplored);
+		
 		if(newLocation.equals(dragonStoneLocation) && action != GOTSearchAction.STAB)
 			builder.setDragonStoneCarried(maxDragonStones);
 			
@@ -219,11 +353,18 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		Tuple<Integer, Integer> newLocation = new Tuple<Integer, Integer>(newRow, newColumn);
 		if(!isValidLocation(newLocation))
 			return false;
+		
+		Boolean currentlyExploredStatus = state.getCurrentlyExplored()[newRow][newColumn];
+		if(currentlyExploredStatus != null && currentlyExploredStatus)
+			return false;
 
 		for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
 			if(!whiteWalkerState.getRight())
 				if(newLocation.equals(whiteWalkerState.getLeft()))
 					return false;
+		
+		/*if(this.grid[newRow][newColumn] == GameObject.WHITE_WALKER)
+			return false;*/
 		
 		if(grid[newLocation.getLeft()][newLocation.getRight()] == GameObject.OBSTACLE)
 			return false;
@@ -232,9 +373,9 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 	}
 
 	public boolean isValidLocation(Tuple<Integer, Integer> location) {
-		if(location.getLeft() >= this.gridRows || location.getLeft() < 0)
+		if(location.getLeft() >= this.gridRows || location.getLeft() < this.rowLowerBound)
 			return false;
-		if(location.getRight() >= this.gridColumns || location.getRight() < 0)
+		if(location.getRight() >= this.gridColumns || location.getRight() < this.columnLowerBound)
 			return false;
 		
 		return true;
@@ -273,72 +414,36 @@ public class GOTSearchProblem extends SearchProblemWithHeuristic<GOTSearchState,
 		}		
 	}
 	
-	public static void main2(String[] args) {
-		try {
-			GOTSearchProblem problem = new GOTSearchProblem(4, 4, 3, 2, 2);
-			problem.visualize();
-			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
-			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
-			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
-			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
-				System.out.println("No Solution");
-			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
-				System.out.println("Resources Exhausted");
-			} else {
-				System.out.println("Press enter...");
-				System.in.read();
-				sol.showNodeSequence();
-				System.out.println(sol.getExpandedNodesCount());
-				System.out.println(sol.getNode().get().getCost());
-			}
-		} catch (SearchProblemException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void visualize(GOTSearchState state) {
+		Character[][] stateGrid = new Character[this.gridRows][this.gridColumns];
+		
+		state.getWhiteWalkerStatus().forEach(status -> {
+			if(status.getRight())
+				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = GameObject.DEAD_WHITE_WALKER.toChar();
+			else
+				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = GameObject.WHITE_WALKER.toChar();
+		});
+		
+		stateGrid[this.dragonStoneLocation.getLeft()][this.dragonStoneLocation.getRight()] = GameObject.DRAGON_STONE.toChar();
+		
+		Tuple<Integer, Integer> jonSnowLocation = state.getLocation();
+		stateGrid[jonSnowLocation.getLeft()][jonSnowLocation.getRight()] = GameObject.JON_SNOW.toChar();
+		
+		this.obstacleLocations.forEach(location -> {
+			stateGrid[location.getLeft()][location.getRight()] = GameObject.OBSTACLE.toChar();
+		});
+		
+		for(int i = 0; i < gridRows; i++)
+			for(int j = 0; j < gridColumns; j++)
+				if(stateGrid[i][j] == null)
+					stateGrid[i][j] = GameObject.EMPTY.toChar();
+		
+		for(int i = 0; i < gridRows; i++) {
+			for(int j = 0; j < gridColumns; j++)
+				System.out.print(stateGrid[i][j] + ", ");
+			System.out.println();
 		}
-	}
-	public static void main(String[] args) {
-		try {
-			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
-			whiteWalkers.add(new Tuple<Integer, Integer>(1, 1));
-			whiteWalkers.add(new Tuple<Integer, Integer>(2, 2));
-			whiteWalkers.add(new Tuple<Integer, Integer>(2, 3));
-			
-			ArrayList<Tuple<Integer, Integer>> obstacleLocations = new ArrayList<Tuple<Integer, Integer>>();
-			obstacleLocations.add(new Tuple<Integer, Integer>(0, 3));
-			obstacleLocations.add(new Tuple<Integer, Integer>(2, 1));
-			
-			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(1, 0);
-			GOTSearchProblem problem = new GOTSearchProblem(4, 4, whiteWalkers, obstacleLocations, dragonStone, 2);
-			problem.visualize();
-			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
-			SearchStrategy<GOTSearchState> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState>();
-			SearchStrategy<GOTSearchState> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState>(problem.getHeuristicFunction());
-			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, astarSearchStrategy);
-			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
-				System.out.println("No Solution");
-			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
-				System.out.println("Resources Exhausted");
-			} else {
-				System.out.println("Press enter...");
-				System.in.read();
-				sol.showNodeSequence();
-				System.out.println(sol.getExpandedNodesCount());
-				System.out.println(sol.getNode().get().getCost());
-			}
-		} catch (SearchProblemException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		System.out.println("Dragon Stone Count: " + state.getDragonStoneCarried());
+		System.out.println();
 	}
 }

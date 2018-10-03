@@ -9,13 +9,15 @@ public class GOTSearchState extends SearchState {
 	private final int dragonGlassCarried;
 	private final Tuple<Integer, Integer> location;
 	private final ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus; //false: alive  true: dead
+	private final Boolean[][] currentlyExplored;
 	
-	public GOTSearchState(int dragonStoneCarried, Tuple<Integer, Integer> location, 
-			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus) {
+	public GOTSearchState(int dragonGlassCarried, Tuple<Integer, Integer> location, 
+			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus, Boolean[][] currentlyExplored) {
 		super();
-		this.dragonGlassCarried = dragonStoneCarried;
+		this.dragonGlassCarried = dragonGlassCarried;
 		this.location = location;
 		this.whiteWalkerStatus = whiteWalkerStatus;
+		this.currentlyExplored = currentlyExplored;
 	}
 
 	public int getDragonStoneCarried() {
@@ -30,6 +32,14 @@ public class GOTSearchState extends SearchState {
 		return this.whiteWalkerStatus;
 	}
 	
+	public int getDragonGlassCarried() {
+		return this.dragonGlassCarried;
+	}
+
+	public Boolean[][] getCurrentlyExplored() {
+		return this.currentlyExplored;
+	}
+
 	public String toString() {
 		String str = "";
 		str += "Dragon Stone: " + this.dragonGlassCarried + " \n";
@@ -45,6 +55,7 @@ public class GOTSearchState extends SearchState {
 		private int dragonStoneCarried;
 		private Tuple<Integer, Integer> location;
 		private ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus; //false: alive  true: dead
+		private Boolean[][] currentlyExplored;
 		
 		public GOTSearchStateBuilder setDragonStoneCarried(int dragonStoneCarried) {
 			this.dragonStoneCarried = dragonStoneCarried;
@@ -60,8 +71,13 @@ public class GOTSearchState extends SearchState {
 			return this;
 		}
 		
+		public GOTSearchStateBuilder setCurrentlyExplored(Boolean[][] currentlyExplored) {
+			this.currentlyExplored = currentlyExplored;
+			return this;
+		}
+		
 		public GOTSearchState build() {
-			return new GOTSearchState(dragonStoneCarried, location, whiteWalkerStatus);
+			return new GOTSearchState(dragonStoneCarried, location, whiteWalkerStatus, currentlyExplored);
 		}
 	}
 }

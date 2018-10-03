@@ -1,4 +1,4 @@
-package searching.strategies;
+package searching.agents;
 
 import java.util.Optional;
 

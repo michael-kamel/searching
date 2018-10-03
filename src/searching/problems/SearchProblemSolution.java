@@ -1,19 +1,22 @@
 package searching.problems;
 
+import java.util.LinkedList;
 import java.util.Optional;
 
-import searching.strategies.SearchTreeNode;
+import searching.agents.SearchTreeNode;
 
 public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	
 	private final Optional<SearchTreeNode<T>> node;
 	private final SearchProblem<T, V> problem;
 	private final int expandedNodesCount;
+	private final LinkedList<SearchTreeNode<T>> nodeSequence;
 	
 	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> node, int expandedNodesCount) {
 		this.problem = problem;
 		this.node = node;
 		this.expandedNodesCount = expandedNodesCount;
+		this.nodeSequence = getNodeSequence();
 	}
 	
 	public Optional<SearchTreeNode<T>> getNode() {
@@ -28,6 +31,28 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return expandedNodesCount;
 	}
 	
+	public LinkedList<SearchTreeNode<T>> getNodeSequence() {
+		if(this.nodeSequence != null)
+			return this.nodeSequence;
+		
+		LinkedList<SearchTreeNode<T>> list = new LinkedList<SearchTreeNode<T>>();
+		
+		Optional<SearchTreeNode<T>> node = this.node;
+		while(node.isPresent()) {
+			list.addFirst(node.get());
+			node = node.get().getParent();
+		}
+		
+		return list;
+	}
+	
+	public void visualizeSolution() {
+		Iterable<SearchTreeNode<T>> solution = this.getNodeSequence();
+		solution.forEach(node -> {
+			this.problem.visualize(node.getCurrentState());
+		});
+	}
+	
 	public void showNodeSequence() {
 		if(this.node.isPresent()) {
 			showNode(this.node.get());
@@ -36,6 +61,10 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		}
 	}
 	
+	public int getSolutionStepCount() {
+		return this.getNodeSequence().size();
+	}
+
 	private void showNode(SearchTreeNode<T> node) {
 		if(node.getParent().isPresent())
 			showNode(node.getParent().get());

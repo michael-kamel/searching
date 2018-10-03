@@ -2,6 +2,7 @@ package searching.strategies;
 
 import java.util.Optional;
 
+import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
 public abstract class SearchStrategy<T extends SearchState> {

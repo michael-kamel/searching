@@ -3,6 +3,7 @@ package searching.strategies;
 import java.util.Optional;
 import java.util.Stack;
 
+import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
 public class IterativeDeepeningSearchStrategy<T extends SearchState> extends UninformedSearchStrategy<T> {

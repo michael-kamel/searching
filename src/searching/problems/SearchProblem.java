@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import searching.agents.SearchTreeNode;
 import searching.exceptions.SearchProblemException;
-import searching.strategies.SearchTreeNode;
 
 public abstract class SearchProblem<T extends SearchState, V extends SearchAction> {
 	private final Iterable<V> possibleActions;
@@ -38,7 +38,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 			public void accept(V action) {
 				if(canTransition(currentState, action)) {
 					T newState = getNewState(nodeToCheck.getCurrentState(), action);
-					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), nodeToCheck.getCost()+action.getCost(), newState, action, nodeToCheck.getDepth()+1);   
+					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), nodeToCheck.getCost() + getActionCost(action), newState, action, nodeToCheck.getDepth()+1);   
 					newNodes.add(newNode);
 				}
 			}
@@ -48,4 +48,10 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	}
 	
 	public abstract boolean canTransition(T state, V action);
+	
+	public abstract void visualize();
+	
+	protected abstract void visualize(T state);
+	
+	protected abstract long getActionCost(V action);
 }

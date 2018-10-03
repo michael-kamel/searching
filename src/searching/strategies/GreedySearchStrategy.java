@@ -3,6 +3,8 @@ package searching.strategies;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.PriorityQueue;
+
+import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
 public class GreedySearchStrategy<T extends SearchState> extends InformedSearchStrategy<T> {

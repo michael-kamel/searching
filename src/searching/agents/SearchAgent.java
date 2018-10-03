@@ -7,7 +7,6 @@ import searching.problems.SearchProblem;
 import searching.problems.SearchProblemSolution;
 import searching.problems.SearchState;
 import searching.strategies.SearchStrategy;
-import searching.strategies.SearchTreeNode;
 
 public class SearchAgent<T extends SearchState, V extends SearchAction> {
 	private int maxTreeNodes; //control to avoid running forever

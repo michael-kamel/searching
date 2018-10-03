@@ -4,8 +4,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
-import searching.problems.SearchAction;
-import searching.problems.SearchProblemWithHeuristic;
+import searching.agents.SearchTreeNode;
 import searching.problems.SearchState;
 
 public class AStarSearchStrategy<T extends SearchState> extends InformedSearchStrategy<T> {
@@ -23,7 +22,7 @@ public class AStarSearchStrategy<T extends SearchState> extends InformedSearchSt
 				
 				long firstNodeTotalCost = firstNodeCost + firstNodeHeuristicCost;
 				long secondNodeTotalCost = secondNodeCost + secondNodeHeuristicCost;
-				return firstNodeTotalCost > secondNodeTotalCost? 1 : firstNodeTotalCost == secondNodeTotalCost ? 0 : -1;
+				return firstNodeTotalCost > secondNodeTotalCost ? 1 : firstNodeTotalCost == secondNodeTotalCost ? 0 : -1;
 			}
 		});
 	}
