@@ -10,7 +10,7 @@ public class SearchTreeNode<T extends SearchState> implements Comparable<SearchT
 	private final long cost; // The cost from the root of the tree up to this node
 	private final T state; // The current state of the node
 	private final SearchAction action; // The action made to reach this state from the previous
-	private final int depth; //root depth:0; depth from root 
+	private final int depth; //depth from root to this node; root depth==0
 	
 	public SearchTreeNode(Optional<SearchTreeNode<T>> parent, long cost, T state, SearchAction action, int depth) {
 		this.parent = parent;
