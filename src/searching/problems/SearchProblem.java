@@ -39,7 +39,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 			@Override
 			public void accept(V action) {
 				if(canTransition(currentState, action)) {
-					T newState = getNewState(nodeToCheck.getCurrentState(), action);
+					T newState = transition(nodeToCheck.getCurrentState(), action);
 					
 					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), 
 							/* cost from root to nodeToCheck(parent node of the new node)  
@@ -59,7 +59,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract T getInitialState();
 
-	public abstract T getNewState(T state, V action); //transition function (single-state problem)
+	public abstract T transition(T state, V action); //single-state problem
 
 	public abstract boolean canTransition(T state, V action); 
 	

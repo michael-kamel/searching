@@ -246,7 +246,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
 				}	
 		/**
-		 * calculates the maxium path cost between any two reachable-from-each-other target cells
+		 * calculates the maximum path cost between any two reachable-from-each-other target cells
 		 * where target cell = {DragonStone, Cell JS can stab from}
 		 */
 		for(int i = 0; i < nodesCount; i++)
@@ -269,15 +269,28 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			case MOVE_DOWN:
 			case MOVE_LEFT:
 			case MOVE_RIGHT:
-			case MOVE_UP: return 1;
-			case STAB: return this.maxPathCost + 2;
-			default: return 0;
+			case MOVE_UP: return 1; 
+			/**
+			 * E,E,E,W,E
+			 * E,E,E,O,E
+			 * W,E,E,O,D
+			 * E,E,E,O,E
+			 * W,E,E,O,J
+			 * 
+			 * In the above-grid, the maximum cost would be that from the cell adj. to the top W(Cell[0][2])
+			 * to the bottom-cell in between the left-most W's (Cell[3][0]). (cost = 5)
+			 * While, the actual cost is from the right-most top-most position; Cell[0][4]
+			 * Therefore, we need to add 2, which is the transition between two clusters (two white walkers)
+			 */
+			case STAB: return this.maxPathCost + 2 * getActionCost(GOTSearchAction.MOVE_DOWN);
+			default: return 0; 
 		}
 	}
 	
 	@Override
 	public GOTSearchState getInitialState() {
-		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(whiteWalkersCount);
+		ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkersStatus = 
+				new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>(this.whiteWalkersCount);
 		
 		for(Tuple<Integer, Integer> point : this.whiteWalkerLocations)
 			whiteWalkersStatus.add(new Tuple<Tuple<Integer, Integer>, Boolean>(point, false));
@@ -285,11 +298,12 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		Boolean[][] currentlyExplored = new Boolean[this.gridRows][this.gridColumns];
 		currentlyExplored[gridRows-1][gridColumns-1] = true;
 		
-		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), whiteWalkersStatus, currentlyExplored);
+		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), 
+				whiteWalkersStatus, currentlyExplored);
 	}
 
 	@Override
-	public GOTSearchState getNewState(GOTSearchState state, GOTSearchAction action) {
+	public GOTSearchState transition(GOTSearchState state, GOTSearchAction action) {
 		Tuple<Integer, Integer> location = state.getLocation();
 		int newRow = location.getLeft();
 		int newColumn = location.getRight();
