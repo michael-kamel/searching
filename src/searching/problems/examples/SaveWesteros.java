@@ -152,7 +152,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	
 	private boolean isPositionCell(int idx) {
 		GOTGameObject content = getGridCellContent(idx);
-		if(content == GOTGameObject.OBSTACLE)
+		if(content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
 			return false;
 		return true;
 	}
@@ -220,7 +220,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		for(int i = 0; i < nodesCount; i++)
 			for(int j = 0; j < nodesCount; j++)
-				if(i != j && (isTargetCell(i) && isTargetCell(j) || (isCell(i, GOTGameObject.DRAGON_STONE) && isCell(j, GOTGameObject.JON_SNOW))))
+				if(i != j && (isTargetCell(i) && isTargetCell(j)))
 					if(cost[i][j] != Integer.MAX_VALUE)
 						maxCost = Math.max(maxCost, cost[i][j]);
 					
@@ -238,7 +238,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			case MOVE_LEFT:
 			case MOVE_RIGHT:
 			case MOVE_UP: return 1;
-			case STAB: return this.maxPathCost - 2;
+			case STAB: return this.maxPathCost + 2;
 			default: return 0;
 		}
 	}
