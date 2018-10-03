@@ -1,4 +1,4 @@
-package searching.problems.examples.GOT;
+package searching.problems.examples.westeros;
 
 import java.util.Arrays;
 import searching.problems.SearchAction;

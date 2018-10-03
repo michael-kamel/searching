@@ -1,4 +1,4 @@
-package searching.problems.examples.GOT;
+package searching.problems.examples.westeros;
 
 import java.io.IOException;
 import java.util.ArrayList;

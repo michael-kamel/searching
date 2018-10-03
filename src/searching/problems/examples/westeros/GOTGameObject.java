@@ -1,4 +1,4 @@
-package searching.problems.examples.GOT;
+package searching.problems.examples.westeros;
 
 public enum GOTGameObject{
 	JON_SNOW('J'),
