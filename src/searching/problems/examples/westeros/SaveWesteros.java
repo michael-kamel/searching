@@ -192,10 +192,14 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		int boundedRows = this.gridRows - this.rowLowerBound;
 		int maxCount = boundedColumns * boundedRows;
 		
-		return ((idx % boundedColumns != 1) && (idx > 0) && getGridCellContent(idx - 1) == GOTGameObject.WHITE_WALKER)
-			|| ((idx % boundedColumns != boundedColumns - 1) && (idx + 1 < maxCount) && getGridCellContent(idx + 1) == GOTGameObject.WHITE_WALKER)
-			|| ((idx + boundedColumns < maxCount) && getGridCellContent(idx + boundedColumns) == GOTGameObject.WHITE_WALKER)
-			|| ((idx - boundedColumns >= 0) && getGridCellContent(idx - boundedColumns) == GOTGameObject.WHITE_WALKER);
+		return ((idx % boundedColumns != 1) && (idx > 0) 
+					&& getGridCellContent(idx - 1) == GOTGameObject.WHITE_WALKER)
+			|| ((idx % boundedColumns != boundedColumns - 1) && (idx + 1 < maxCount) 
+					&& getGridCellContent(idx + 1) == GOTGameObject.WHITE_WALKER)
+			|| ((idx + boundedColumns < maxCount) 
+					&& getGridCellContent(idx + boundedColumns) == GOTGameObject.WHITE_WALKER)
+			|| ((idx - boundedColumns >= 0) 
+					&& getGridCellContent(idx - boundedColumns) == GOTGameObject.WHITE_WALKER);
 	}
 	
 	/**
@@ -320,12 +324,14 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			case MOVE_RIGHT:
 				newColumn = location.getRight()+1; break;
 			case STAB: {
-				ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> newWhiteWalkerState = new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>();
+				ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> newWhiteWalkerState = 
+						new ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>>();
 				
 				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus()) {
 					if(!whiteWalkerState.getRight())
 						if(Geomtry.isAdjacent(whiteWalkerState.getLeft(), location)) {
-							newWhiteWalkerState.add(new Tuple<Tuple<Integer, Integer>, Boolean>(whiteWalkerState.getLeft(), true));
+							newWhiteWalkerState.add(new Tuple<Tuple<Integer, Integer>, Boolean>(
+									whiteWalkerState.getLeft(), true));
 							continue;
 						}
 					
@@ -352,8 +358,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		newCurrentlyExplored[newRow][newColumn] = true;
 		builder.setCurrentlyExplored(newCurrentlyExplored);
 		
-		if(newLocation.equals(dragonStoneLocation) && action != GOTSearchAction.STAB)
-			builder.setDragonStoneCarried(maxDragonGlass);
+		if(newLocation.equals(this.dragonStoneLocation) && action != GOTSearchAction.STAB)
+			builder.setDragonStoneCarried(this.maxDragonGlass);
 			
 		return builder.build();
 	}
@@ -410,6 +416,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	}
 
 	public boolean isValidLocation(Tuple<Integer, Integer> location) {
+		//lower bounds; reduction by not allowing transition to these locations
 		if(location.getLeft() >= this.gridRows || location.getLeft() < this.rowLowerBound)
 			return false;
 		if(location.getRight() >= this.gridColumns || location.getRight() < this.columnLowerBound)
@@ -421,12 +428,16 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	@Override
 	public boolean goalTest(GOTSearchState state) {
 		for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
-			if(!whiteWalkerState.getRight())
+			if(!whiteWalkerState.getRight()) //if any WW is alive, return false
 				return false;
 				
 		return true;
 	}
 	
+	/*
+	 * visualizes the problem before searching begins
+	 * initial grid generation
+	 * */
 	public void visualize() {
 		for(int i = 0; i < this.gridRows; i++) {
 			for(int j = 0; j < this.gridColumns; j++) 
@@ -441,12 +452,15 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		state.getWhiteWalkerStatus().forEach(status -> {
 			if(status.getRight())
-				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = GOTGameObject.DEAD_WHITE_WALKER.toChar();
+				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = 
+					GOTGameObject.DEAD_WHITE_WALKER.toChar();
 			else
-				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = GOTGameObject.WHITE_WALKER.toChar();
+				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = 
+					GOTGameObject.WHITE_WALKER.toChar();
 		});
 		
-		stateGrid[this.dragonStoneLocation.getLeft()][this.dragonStoneLocation.getRight()] = GOTGameObject.DRAGON_STONE.toChar();
+		stateGrid[this.dragonStoneLocation.getLeft()][this.dragonStoneLocation.getRight()] = 
+				GOTGameObject.DRAGON_STONE.toChar();
 		
 		Tuple<Integer, Integer> jonSnowLocation = state.getLocation();
 		stateGrid[jonSnowLocation.getLeft()][jonSnowLocation.getRight()] = GOTGameObject.JON_SNOW.toChar();
