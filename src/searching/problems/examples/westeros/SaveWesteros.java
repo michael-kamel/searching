@@ -22,6 +22,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int rowLowerBound;
 	private int columnLowerBound;
 	private int maxPathCost;
+	private int obstacleCount;
 	
 	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) 
 			throws SearchProblemException {
@@ -31,6 +32,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.whiteWalkersCount = whiteWalkersCount;
 		this.whiteWalkerLocations = new ArrayList<Tuple<Integer, Integer>>(whiteWalkersCount);
 		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
+		this.obstacleCount = obstacleCount;
 		this.maxDragonGlass = maxDragonStones;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 		calculateLowerBounds();
@@ -48,6 +50,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.obstacleLocations = obstacleLocations;
 		this.maxDragonGlass = maxDragonStones;
 		this.dragonStoneLocation = dragonStoneLocation;
+		this.obstacleCount = obstacleLocations.size();
 		genGrid(width, height, whiteWalkerLocations, obstacleLocations, dragonStoneLocation);
 		calculateLowerBounds();
 		calculateLongestPathCost();
@@ -178,8 +181,13 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	 */
 	private boolean isTargetCell(int idx) {
 		GOTGameObject content = getGridCellContent(idx);
+		
 		if(content == GOTGameObject.DRAGON_STONE)
 			return true;
+		
+		if(content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
+			return false;
+		
 		int boundedColumns = this.gridColumns - this.columnLowerBound;
 		int boundedRows = this.gridRows - this.rowLowerBound;
 		int maxCount = boundedColumns * boundedRows;
@@ -245,6 +253,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 						newCost = Integer.MAX_VALUE;
 					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
 				}	
+		
 		/**
 		 * calculates the maximum path cost between any two reachable-from-each-other target cells
 		 * where target cell = {DragonStone, Cell JS can stab from}
@@ -253,9 +262,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			for(int j = 0; j < nodesCount; j++)
 				if(i != j && (isTargetCell(i) && isTargetCell(j)))
 					if(cost[i][j] != Integer.MAX_VALUE)
-					//two target cells are not reachable from each other; infinite cost
-						maxCost = Math.max(maxCost, cost[i][j]);
-					
+						if(cost[i][j] > maxCost)
+							//two target cells are not reachable from each other; infinite cost
+							maxCost = Math.max(maxCost, cost[i][j]);
+		
 		this.maxPathCost = maxCost;
 	}
 	
@@ -269,20 +279,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			case MOVE_DOWN:
 			case MOVE_LEFT:
 			case MOVE_RIGHT:
-			case MOVE_UP: return 1; 
-			/**
-			 * E,E,E,W,E
-			 * E,E,E,O,E
-			 * W,E,E,O,D
-			 * E,E,E,O,E
-			 * W,E,E,O,J
-			 * 
-			 * In the above-grid, the maximum cost would be that from the cell adj. to the top W(Cell[0][2])
-			 * to the bottom-cell in between the left-most W's (Cell[3][0]). (cost = 5)
-			 * While, the actual cost is from the right-most top-most position; Cell[0][4]
-			 * Therefore, we need to add 2, which is the transition between two clusters (two white walkers)
-			 */
-			case STAB: return this.maxPathCost + 2 * getActionCost(GOTSearchAction.MOVE_DOWN);
+			case MOVE_UP: return 1;
+			case STAB: return this.maxPathCost;
 			default: return 0; 
 		}
 	}
@@ -459,7 +457,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		for(int i = 0; i < gridRows; i++)
 			for(int j = 0; j < gridColumns; j++)
-				if(stateGrid[i][j] == null)
+				if(stateGrid[i][j] == null) 
 					stateGrid[i][j] = GOTGameObject.EMPTY.toChar();
 		
 		for(int i = 0; i < gridRows; i++) {
