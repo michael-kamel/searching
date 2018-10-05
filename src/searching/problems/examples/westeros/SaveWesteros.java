@@ -23,8 +23,9 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int columnLowerBound;
 	private int maxPathCost;
 	private int obstacleCount;
+	private boolean useMaxCost;
 	
-	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) 
+	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones, boolean useMaxCost) 
 			throws SearchProblemException {
 		super(GOTSearchAction.getAll());
 		this.gridRows = height;
@@ -34,6 +35,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
 		this.obstacleCount = obstacleCount;
 		this.maxDragonGlass = maxDragonStones;
+		this.useMaxCost = useMaxCost;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 		calculateLowerBounds();
 		calculateLongestPathCost();
@@ -41,7 +43,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	
 	public SaveWesteros(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
 			ArrayList<Tuple<Integer,Integer>> obstacleLocations, Tuple<Integer, Integer> dragonStoneLocation,
-			int maxDragonStones) throws SearchProblemException {
+			int maxDragonStones, boolean useMaxCost) throws SearchProblemException {
 		super(GOTSearchAction.getAll());
 		this.gridRows = height;
 		this.gridColumns = width;
@@ -51,9 +53,14 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.maxDragonGlass = maxDragonStones;
 		this.dragonStoneLocation = dragonStoneLocation;
 		this.obstacleCount = obstacleLocations.size();
+		this.useMaxCost = useMaxCost;
 		genGrid(width, height, whiteWalkerLocations, obstacleLocations, dragonStoneLocation);
 		calculateLowerBounds();
 		calculateLongestPathCost();
+	}
+	
+	public int getObstacleCount() {
+		return this.obstacleCount;
 	}
 	
 	private void initGrid(int width, int height) throws SearchProblemGameConstructionConstraintsViolation {
@@ -283,8 +290,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			case MOVE_DOWN:
 			case MOVE_LEFT:
 			case MOVE_RIGHT:
-			case MOVE_UP: return 1;
-			case STAB: return this.maxPathCost;
+			case MOVE_UP: return this.useMaxCost ? 1 : 0;
+			case STAB: return this.useMaxCost ? this.maxPathCost : 1;
 			default: return 0; 
 		}
 	}
@@ -348,14 +355,16 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		Boolean[][] newCurrentlyExplored;
 		if(!action.equals(GOTSearchAction.STAB))
-			if(newLocation.equals(this.dragonStoneLocation) && state.getDragonGlassCarried() != this.maxDragonGlass)
+			if(newLocation.equals(this.dragonStoneLocation) && state.getDragonGlassCarried() == 0)
 				newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
 			else
 				newCurrentlyExplored = ObjectUtils.clone2DArray(state.getCurrentlyExplored());
 		 else
 			newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
 		
-		newCurrentlyExplored[newRow][newColumn] = true;
+		if(action != GOTSearchAction.STAB || !location.equals(this.dragonStoneLocation))
+			newCurrentlyExplored[newRow][newColumn] = true;
+		
 		builder.setCurrentlyExplored(newCurrentlyExplored);
 		
 		if(newLocation.equals(this.dragonStoneLocation) && action != GOTSearchAction.STAB)
@@ -468,6 +477,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.obstacleLocations.forEach(location -> {
 			stateGrid[location.getLeft()][location.getRight()] = GOTGameObject.OBSTACLE.toChar();
 		});
+		
+		for(int i = 0; i < state.getCurrentlyExplored().length; i++)
+			for(int j = 0; j < state.getCurrentlyExplored()[i].length; j++)
+				if(state.getCurrentlyExplored()[i][j] != null && state.getCurrentlyExplored()[i][j])
+					stateGrid[i][j] = 'T';
 		
 		for(int i = 0; i < gridRows; i++)
 			for(int j = 0; j < gridColumns; j++)
