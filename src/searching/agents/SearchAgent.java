@@ -24,7 +24,7 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 		int count = 0; //number of _expanded_ nodes, so far
 		
 		while(count <= maxTreeNodes) {
-			//gets the next node; dequeuing/popping (the data structure is strategy-dependant)
+			//gets the next node; dequeuing/popping (the data structure is strategy-dependent)
 			Optional<SearchTreeNode<T, V>> nodeToCheck = searchStrategy.getNext();  
 			
 			if(!nodeToCheck.isPresent()) //emptied the data structure; no more nodes to expand 

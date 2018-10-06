@@ -40,14 +40,14 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 			@Override
 			public void accept(V action) {
 				if(canTransition(currentState, action)) {
-					T newState = transition(nodeToCheck.getCurrentState(), action);
+					T newState = transition(currentState, action);
 					
-					SearchTreeNode<T, V> newNode = new SearchTreeNode<T, V>(Optional.of(nodeToCheck), 
+					SearchTreeNode<T, V> newNode = new SearchTreeNode<T, V>( Optional.of(nodeToCheck), 
 							/* cost from root to nodeToCheck(parent node of the new node)  
 							   + cost of action we executed to get the new node
 							*/
-							nodeToCheck.getCost() + getActionCost(currentState, action), newState, Optional.of(action), 
-							nodeToCheck.getDepth()+1); 
+							(nodeToCheck.getCost() + getActionCost(currentState, action)), 
+							newState, Optional.of(action), nodeToCheck.getDepth()+1 ); 
 					newNodes.add(newNode);
 				}
 			}
