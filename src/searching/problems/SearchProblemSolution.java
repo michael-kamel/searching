@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 import searching.agents.SearchTreeNode;
+import searching.visualizers.Visualizer;
 
 public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	
@@ -11,13 +12,15 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	private final SearchProblem<T, V> problem;
 	private final int expandedNodesCount;
 	private final LinkedList<SearchTreeNode<T, V>> nodeSequence;
+	private Visualizer visualizer;
 	
 	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> node, 
-			int expandedNodesCount) {
+			int expandedNodesCount, Visualizer visualizer) {
 		this.problem = problem;
 		this.node = node;
 		this.expandedNodesCount = expandedNodesCount;
 		this.nodeSequence = getNodeSequence();
+		this.visualizer = visualizer;
 	}
 	
 	public Optional<SearchTreeNode<T, V>> getNode() {
@@ -51,7 +54,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		Iterable<SearchTreeNode<T, V>> solution = this.getNodeSequence();
 		solution.forEach(node -> {
 			if(node.getParent().isPresent())
-				System.out.println(node.getAction().get() + ": " + problem.getActionCost(
+				this.visualizer.visualizeLine(node.getAction().get() + ": " + problem.getActionCost(
 						node.getParent().get().getCurrentState(), node.getAction().get()));
 			
 			this.problem.visualize(node.getCurrentState());
@@ -62,14 +65,14 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		if(node.getParent().isPresent())
 			showNode(node.getParent().get());
 		
-		System.out.println(node.getCurrentState());
+		this.visualizer.visualizeLine(node.getCurrentState().toString());
 	}
 	
 	public void showNodeSequence() {//sequence of any nodes (not necessarily a solution)
 		if(this.node.isPresent()) {
 			showNode(this.node.get());
 		} else {
-			System.out.println("No Solution");
+			this.visualizer.visualizeLine("No Solution");
 		}
 	}
 	
@@ -81,7 +84,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 			extends SearchProblemSolution<T, V> {
 		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
-			super(problem, node, expandedNodesCount);
+			super(problem, node, expandedNodesCount, null);
 		}
 	}
 	
@@ -89,7 +92,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 			extends SearchProblemSolution<T, V> {
 		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
-			super(problem, node, expandedNodesCount);
+			super(problem, node, expandedNodesCount, null);
 		}
 	}
 

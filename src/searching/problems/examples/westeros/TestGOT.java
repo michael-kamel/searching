@@ -15,30 +15,75 @@ import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.UniformCostSearchStrategy;
 import searching.utils.Tuple;
+import searching.visualizers.ConsoleVisualizer;
+import searching.visualizers.Visualizer;
 
 public class TestGOT {
 	public static void main(String[] args) {
-		ucsGOTSearchProblemTest();
-		//ucsGOTHardCodedSearchProblem1Test();
-		//ucsGOTHardCodedSearchProblem2Test();
-		//ucsGOTHardCodedSearchProblem3Test();
-		//ucsGOTHardCodedSearchProblem4Test();
-		//ucsGOTHardCodedSearchProblem5Test();
-		//ucsGOTHardCodedSearchProblem6Test();
-		//ucsGOTHardCodedSearchProblem7Test();
-		//ucsGOTHardCodedSearchProblem7_2Test();
-		//ucsGOTHardCodedSearchProblem8Test();
-		//ucsGOTHardCodedSearchProblem9Test();
-		//ucsGOTHardCodedSearchProblem10Test();
-		//ucsGOTHardCodedSearchProblem11Test();
-		//ucsGOTHardCodedSearchProblem12Test();
-		//ucsGOTHardCodedSearchProblem13Test();
-		//ucsGOTHardCodedSearchProblem14Test();
+		/*try {
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = genSaveWesteros(4, 4, 4, 4, 2, visualizer);
+			SearchStrategy<GOTSearchState, GOTSearchAction> strategy = 
+					new UniformCostSearchStrategy<GOTSearchState, GOTSearchAction>();
+			
+			solveSaveWesteros(problem, strategy, 1000000);
+		} catch (SearchProblemException | IOException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}*/
+		//GOTSearchProblemTest();
+		//GOTHardCodedSearchProblem1Test();
+		//GOTHardCodedSearchProblem2Test();
+		//GOTHardCodedSearchProblem3Test();
+		//GOTHardCodedSearchProblem4Test();
+		//GOTHardCodedSearchProblem5Test();
+		//GOTHardCodedSearchProblem6Test();
+		//GOTHardCodedSearchProblem7Test();
+		//GOTHardCodedSearchProblem7_2Test();
+		//GOTHardCodedSearchProblem8Test();
+		//GOTHardCodedSearchProblem9Test();
+		//GOTHardCodedSearchProblem10Test();
+		//GOTHardCodedSearchProblem11Test();
+		//GOTHardCodedSearchProblem12Test();
+		//GOTHardCodedSearchProblem13Test();
+		//GOTHardCodedSearchProblem14Test();
 	}
 	
-	public static void ucsGOTSearchProblemTest() {
+	public static SaveWesteros genSaveWesteros(int rowCount, int columnCount, int whiteWalkerCount, int obstacleCount, 
+			int dragonGlassCapacity, Visualizer visualizer) throws SearchProblemException {
+		SaveWesteros problem = new SaveWesteros(columnCount, rowCount, whiteWalkerCount, obstacleCount, 
+				dragonGlassCapacity, visualizer);
+		return problem;
+	}
+	
+	public static void solveSaveWesteros(SaveWesteros problem, SearchStrategy<GOTSearchState, GOTSearchAction> strategy,
+			int maxTreeNodesToExpandBeforeFailing) throws IOException {
+		problem.visualize();
+		System.out.println("Press any key to solve");
+		System.in.read();
+		SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>
+			(maxTreeNodesToExpandBeforeFailing);
+		SearchProblemSolution<GOTSearchState, GOTSearchAction> solution = agent.search(problem, strategy);
+		
+		if(solution instanceof SearchProblemSolution.FailedSearchProblemSolution) {
+			System.out.println("No Solution");
+			System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+		} else if(solution instanceof SearchProblemSolution.BottomProblemSolution) {
+			System.out.println("Resources Exhausted");
+			System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+		} else {
+			System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+			System.out.println("Cost: " + solution.getNode().get().getCost());
+			System.out.println("Press any key to visualize solution...");
+			System.in.read();
+			solution.visualizeSolution();
+		}
+	}
+	
+	public static void GOTSearchProblemTest() {
 		try {
-			SaveWesteros problem = new SaveWesteros(5, 5, 4, 6, 2);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(5, 5, 4, 6, 2, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeuristic = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -74,7 +119,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem1Test() {
+	public static void GOTHardCodedSearchProblem1Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(1, 2));
@@ -95,7 +140,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 2);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -134,7 +180,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem2Test() {
+	public static void GOTHardCodedSearchProblem2Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(5, 0));
@@ -156,7 +202,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 1;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 5);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -195,7 +242,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem3Test() {
+	public static void GOTHardCodedSearchProblem3Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -222,7 +269,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 3);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -261,7 +309,7 @@ public class TestGOT {
 		}
 	}
 
-	public static void ucsGOTHardCodedSearchProblem4Test() {
+	public static void GOTHardCodedSearchProblem4Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -288,7 +336,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 3);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -327,7 +376,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem5Test() {
+	public static void GOTHardCodedSearchProblem5Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 2));
@@ -341,7 +390,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 2);
-			SaveWesteros problem = new SaveWesteros(4, 4, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(4, 4, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -380,7 +430,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem6Test() {
+	public static void GOTHardCodedSearchProblem6Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(5, 1));
@@ -414,7 +464,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 1;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(4, 5);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -454,7 +505,7 @@ public class TestGOT {
 	}
 	
 
-	public static void ucsGOTHardCodedSearchProblem7Test() {
+	public static void GOTHardCodedSearchProblem7Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(5, 1));
@@ -463,6 +514,7 @@ public class TestGOT {
 			whiteWalkers.add(new Tuple<Integer, Integer>(3, 3));
 			whiteWalkers.add(new Tuple<Integer, Integer>(2, 3));
 			whiteWalkers.add(new Tuple<Integer, Integer>(1, 3));
+			whiteWalkers.add(new Tuple<Integer, Integer>(3, 5));
 			
 			ArrayList<Tuple<Integer, Integer>> obstacleLocations = new ArrayList<Tuple<Integer, Integer>>();
 			obstacleLocations.add(new Tuple<Integer, Integer>(4, 4));
@@ -484,9 +536,10 @@ public class TestGOT {
 			obstacleLocations.add(new Tuple<Integer, Integer>(5, 0));
 			obstacleLocations.add(new Tuple<Integer, Integer>(4, 0));
 			
-			int dragonGlassCapacity = 2;
-			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(0, 5);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			int dragonGlassCapacity = 1;
+			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(4, 5);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -525,7 +578,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem7_2Test() {
+	public static void GOTHardCodedSearchProblem7_2Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(5, 1));
@@ -555,7 +608,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 3;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(0, 5);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -594,7 +648,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem8Test() {
+	public static void GOTHardCodedSearchProblem8Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(6, 0));
@@ -626,7 +680,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 4;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(5, 4);
-			SaveWesteros problem = new SaveWesteros(5, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(5, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -665,7 +720,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem9Test() {
+	public static void GOTHardCodedSearchProblem9Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(7, 0));
@@ -701,7 +756,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 1;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(6, 4);
-			SaveWesteros problem = new SaveWesteros(5, 8, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(5, 8, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -740,7 +796,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem10Test() {
+	public static void GOTHardCodedSearchProblem10Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(1, 2));
@@ -780,7 +836,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 2;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(7, 4);
-			SaveWesteros problem = new SaveWesteros(5, 9, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, true);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(5, 9, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -818,7 +875,7 @@ public class TestGOT {
 			e.printStackTrace();
 		}
 	}
-	public static void ucsGOTHardCodedSearchProblem11Test() {
+	public static void GOTHardCodedSearchProblem11Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -848,7 +905,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 10;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(4, 5);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -886,7 +944,7 @@ public class TestGOT {
 			e.printStackTrace();
 		}
 	}
-	public static void ucsGOTHardCodedSearchProblem12Test() {
+	public static void GOTHardCodedSearchProblem12Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -916,7 +974,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 10;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(0, 0);
-			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -954,7 +1013,7 @@ public class TestGOT {
 			e.printStackTrace();
 		}
 	}
-	public static void ucsGOTHardCodedSearchProblem13Test() {
+	public static void GOTHardCodedSearchProblem13Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -990,7 +1049,8 @@ public class TestGOT {
 			
 			int dragonGlassCapacity = 3;
 			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 5);
-			SaveWesteros problem = new SaveWesteros(6, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -1029,7 +1089,7 @@ public class TestGOT {
 		}
 	}
 	
-	public static void ucsGOTHardCodedSearchProblem14Test() {
+	public static void GOTHardCodedSearchProblem14Test() {
 		try {
 			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
 			whiteWalkers.add(new Tuple<Integer, Integer>(0, 0));
@@ -1062,8 +1122,8 @@ public class TestGOT {
 			obstacleLocations.add(new Tuple<Integer, Integer>(3, 3));
 			obstacleLocations.add(new Tuple<Integer, Integer>(3, 18));
 			for(int i = 4; i < 18; i++) {
-				if(i != 4)
-					obstacleLocations.add(new Tuple<Integer, Integer>(1, i));
+				
+				obstacleLocations.add(new Tuple<Integer, Integer>(1, i));
 				obstacleLocations.add(new Tuple<Integer, Integer>(2, i));
 				obstacleLocations.add(new Tuple<Integer, Integer>(3, i));
 				obstacleLocations.add(new Tuple<Integer, Integer>(4, i));
@@ -1072,8 +1132,9 @@ public class TestGOT {
 				
 			
 			int dragonGlassCapacity = 100;
-			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(1, 4);
-			SaveWesteros problem = new SaveWesteros(20, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, false);
+			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(0, 4);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(20, 7, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
@@ -1093,6 +1154,67 @@ public class TestGOT {
 			System.out.println("Max cost: " + problem.getMaxPathCost());
 			System.in.read();
 			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, ucsSearchStrategy);
+			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
+				System.out.println("No Solution");
+			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
+				System.out.println("Resources Exhausted");
+			} else {
+				System.out.println("Press enter...");
+				System.in.read();
+				sol.visualizeSolution();
+				System.out.println("Nodes expanded: " + sol.getExpandedNodesCount());
+				System.out.println("Cost: " + sol.getNode().get().getCost());
+			}
+		} catch (SearchProblemException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void GOTHardCodedSearchProblem15Test() {
+		try {
+			ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
+			whiteWalkers.add(new Tuple<Integer, Integer>(1, 2));
+			whiteWalkers.add(new Tuple<Integer, Integer>(1, 4));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 3));
+			whiteWalkers.add(new Tuple<Integer, Integer>(2, 4));
+			
+			ArrayList<Tuple<Integer, Integer>> obstacleLocations = new ArrayList<Tuple<Integer, Integer>>();
+			obstacleLocations.add(new Tuple<Integer, Integer>(0, 0));
+			obstacleLocations.add(new Tuple<Integer, Integer>(0, 2));
+			obstacleLocations.add(new Tuple<Integer, Integer>(1, 5));
+			obstacleLocations.add(new Tuple<Integer, Integer>(2, 1));
+			obstacleLocations.add(new Tuple<Integer, Integer>(2, 2));
+			obstacleLocations.add(new Tuple<Integer, Integer>(2, 5));
+			obstacleLocations.add(new Tuple<Integer, Integer>(3, 1));
+			obstacleLocations.add(new Tuple<Integer, Integer>(4, 4));
+			obstacleLocations.add(new Tuple<Integer, Integer>(5, 2));
+			
+			int dragonGlassCapacity = 4;
+			Tuple<Integer, Integer> dragonStone = new Tuple<Integer, Integer>(3, 2);
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(6, 6, whiteWalkers, obstacleLocations, dragonStone, dragonGlassCapacity, visualizer);
+			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
+			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
+					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
+					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
+			
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
+			SearchStrategy<GOTSearchState, GOTSearchAction> ucsSearchStrategy = new UniformCostSearchStrategy<GOTSearchState, GOTSearchAction>();
+			SearchStrategy<GOTSearchState, GOTSearchAction> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState, GOTSearchAction>();
+			SearchStrategy<GOTSearchState, GOTSearchAction> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState, GOTSearchAction>();
+			SearchStrategy<GOTSearchState, GOTSearchAction> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState, GOTSearchAction>();
+			SearchStrategy<GOTSearchState, GOTSearchAction> greedySearchStrategy = new GreedySearchStrategy<GOTSearchState, GOTSearchAction>(nearestWhiteWalkerHeuristic);
+			SearchStrategy<GOTSearchState, GOTSearchAction> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(furthestWhiteWalkerAndStabHeurisitc);
+			problem.visualize();
+			System.out.println("Max cost: " + problem.getMaxPathCost());
+			System.in.read();
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, astarSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
 				System.out.println("No Solution");
 			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {

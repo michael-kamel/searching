@@ -6,14 +6,25 @@ import java.util.function.Consumer;
 
 import searching.agents.SearchTreeNode;
 import searching.exceptions.SearchProblemException;
+import searching.visualizers.Visualizer;
 
 public abstract class SearchProblem<T extends SearchState, V extends SearchAction> {
 	private final Iterable<V> possibleActions;
+	private Visualizer visualizer;
 	
-	public SearchProblem(Iterable<V> possibleActions) throws SearchProblemException {
+	public SearchProblem(Iterable<V> possibleActions, Visualizer visualizer) throws SearchProblemException {
 		this.possibleActions = possibleActions;
+		this.visualizer = visualizer;
 	}
 		
+	public Visualizer getVisualizer() {
+		return this.visualizer;
+	}
+	
+	public void setVisualizer(Visualizer visualizer) {
+		this.visualizer = visualizer;
+	}
+	
 	public Iterable<V> getPossibleActions() {
 		return this.possibleActions;
 	}

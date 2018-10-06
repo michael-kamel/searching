@@ -8,6 +8,7 @@ import searching.problems.SearchProblem;
 import searching.problems.examples.westeros.GOTSearchState.GOTSearchStateBuilder;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
+import searching.visualizers.Visualizer;
 import searching.utils.ObjectUtils;
 
 public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction> {
@@ -24,16 +25,17 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int maxPathCost;
 	private int obstacleCount;
 	
-	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) 
+	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, 
+			int maxDragonGlass, Visualizer visualizer) 
 			throws SearchProblemException {
-		super(GOTSearchAction.getAll());
+		super(GOTSearchAction.getAll(), visualizer);
 		this.gridRows = height;
 		this.gridColumns = width;
 		this.whiteWalkersCount = whiteWalkersCount;
 		this.whiteWalkerLocations = new ArrayList<Tuple<Integer, Integer>>(whiteWalkersCount);
 		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
 		this.obstacleCount = obstacleCount;
-		this.maxDragonGlass = maxDragonStones;
+		this.maxDragonGlass = maxDragonGlass;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 		calculateLowerBounds();
 		calculateLongestPathCost();
@@ -41,8 +43,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	
 	public SaveWesteros(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
 			ArrayList<Tuple<Integer,Integer>> obstacleLocations, Tuple<Integer, Integer> dragonStoneLocation,
-			int maxDragonStones, boolean useMaxCost) throws SearchProblemException {
-		super(GOTSearchAction.getAll());
+			int maxDragonStones, Visualizer visualizer) throws SearchProblemException {
+		super(GOTSearchAction.getAll(), visualizer);
 		this.gridRows = height;
 		this.gridColumns = width;
 		this.whiteWalkersCount = whiteWalkerLocations.size();
@@ -65,6 +67,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a width of 4 units or more");
 		if(height < 4)
 			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
+		
+		int gridCellCount = width*height;
+		int requiredGridCellCount = 2 + whiteWalkersCount + obstacleCount;
+		if(gridCellCount < requiredGridCellCount)
+			throw new SearchProblemGameConstructionConstraintsViolation("Grid size can't accomodate given parameters for the problem");
 		
 		this.grid = new GOTGameObject[height][width];
 		
@@ -186,11 +193,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private boolean isTargetCell(int idx) {
 		GOTGameObject content = getGridCellContent(idx);
 		
-		//if(content == GOTGameObject.DRAGON_STONE)
-			//return true;
+		if(content == GOTGameObject.DRAGON_STONE)
+			return true;
 		
-		if(content == GOTGameObject.DRAGON_STONE || 
-				content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
+		if(content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
 			return false;
 		
 		int boundedColumns = this.gridColumns - this.columnLowerBound;
@@ -383,7 +389,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		if(newLocation.equals(this.dragonStoneLocation) && action != GOTSearchAction.STAB) {
 			builder.setDragonGlassCarried(this.maxDragonGlass);
-			if(state.getDragonGlassCarried() != this.maxDragonGlass)
+			if(state.getDragonGlassCarried() == 0)
 				builder.setPickedUpDragonGlass(true);
 		}
 			
@@ -467,9 +473,9 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	public void visualize() {
 		for(int i = 0; i < this.gridRows; i++) {
 			for(int j = 0; j < this.gridColumns; j++) 
-				System.out.print(this.grid[i][j].toChar() + ", ");
+				this.getVisualizer().visualize(this.grid[i][j].toChar() + ", ");
 			
-			System.out.println();
+			this.getVisualizer().visualizeLine("");
 		}		
 	}
 	
@@ -507,8 +513,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		for(int i = 0; i < gridRows; i++) {
 			for(int j = 0; j < gridColumns; j++)
-				System.out.print(stateGrid[i][j] + ", ");
-			System.out.println();
+				this.getVisualizer().visualize(stateGrid[i][j] + ", ");
+			this.getVisualizer().visualizeLine("");
 		}
 						
 		System.out.println("Dragon Glass Count: " + state.getDragonGlassCarried());
