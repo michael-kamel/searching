@@ -38,7 +38,7 @@ public class TestGOT {
 	
 	public static void ucsGOTSearchProblemTest() {
 		try {
-			SaveWesteros problem = new SaveWesteros(5, 5, 4, 6, 2, true);
+			SaveWesteros problem = new SaveWesteros(5, 5, 4, 6, 2);
 			HeuristicFunction<GOTSearchState> stabHeuristic = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);

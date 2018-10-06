@@ -23,9 +23,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int columnLowerBound;
 	private int maxPathCost;
 	private int obstacleCount;
-	private boolean useMaxCost;
 	
-	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones, boolean useMaxCost) 
+	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, int maxDragonStones) 
 			throws SearchProblemException {
 		super(GOTSearchAction.getAll());
 		this.gridRows = height;
@@ -35,7 +34,6 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.obstacleLocations = new ArrayList<Tuple<Integer, Integer>>(obstacleCount);
 		this.obstacleCount = obstacleCount;
 		this.maxDragonGlass = maxDragonStones;
-		this.useMaxCost = useMaxCost;
 		genGrid(width, height, whiteWalkersCount, obstacleCount);
 		calculateLowerBounds();
 		calculateLongestPathCost();
@@ -53,7 +51,6 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		this.maxDragonGlass = maxDragonStones;
 		this.dragonStoneLocation = dragonStoneLocation;
 		this.obstacleCount = obstacleLocations.size();
-		this.useMaxCost = useMaxCost;
 		genGrid(width, height, whiteWalkerLocations, obstacleLocations, dragonStoneLocation);
 		calculateLowerBounds();
 		calculateLongestPathCost();

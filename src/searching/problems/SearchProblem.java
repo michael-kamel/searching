@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import searching.agents.SearchTreeNode;
 import searching.exceptions.SearchProblemException;
-import searching.problems.examples.westeros.GOTSearchAction;
 
 public abstract class SearchProblem<T extends SearchState, V extends SearchAction> {
 	private final Iterable<V> possibleActions;
