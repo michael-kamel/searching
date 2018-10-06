@@ -189,10 +189,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private boolean isTargetCell(int idx) {
 		GOTGameObject content = getGridCellContent(idx);
 		
-		if(content == GOTGameObject.DRAGON_STONE)
-			return true;
+		//if(content == GOTGameObject.DRAGON_STONE)
+			//return true;
 		
-		if(content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
+		if(content == GOTGameObject.DRAGON_STONE || 
+				content == GOTGameObject.OBSTACLE || content == GOTGameObject.WHITE_WALKER)
 			return false;
 		
 		int boundedColumns = this.gridColumns - this.columnLowerBound;
@@ -265,6 +266,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
 				}	
 		
+		
 		/**
 		 * calculates the maximum path cost between any two reachable-from-each-other target cells
 		 * where target cell = {DragonStone, Cell JS can stab from}
@@ -285,14 +287,23 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	}
 	
 	@Override
-	protected long getActionCost(GOTSearchAction action) {
+	protected long getActionCost(GOTSearchState state, GOTSearchAction action) {
+		int deadWhiteWalkers = (int) state.getWhiteWalkerStatus().stream()
+				.filter(status -> status.getRight()).count();
+		int aliveWhiteWalkers = this.whiteWalkersCount - deadWhiteWalkers;
+		
 		switch (action) {
 			case MOVE_DOWN:
 			case MOVE_LEFT:
 			case MOVE_RIGHT:
-			case MOVE_UP: return this.useMaxCost ? 1 : 0;
-			case STAB: return this.useMaxCost ? this.maxPathCost : 1;
-			default: return 0; 
+			case MOVE_UP: {
+				if(state.getDragonGlassCarried() == 0 || state.getPickedUpDragonGlass())
+					return 0;
+				return 1;
+			}
+			case STAB: return Math.min((this.gridColumns * this.gridRows) - this.obstacleCount - aliveWhiteWalkers,
+					this.maxPathCost * deadWhiteWalkers);
+			default: return 0;
 		}
 	}
 	
@@ -308,7 +319,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		currentlyExplored[gridRows-1][gridColumns-1] = true;
 		
 		return new GOTSearchState(0, new Tuple<Integer, Integer>(gridRows-1, gridColumns-1), 
-				whiteWalkersStatus, currentlyExplored);
+				whiteWalkersStatus, currentlyExplored, false);
 	}
 
 	@Override
@@ -319,7 +330,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		GOTSearchStateBuilder builder = new GOTSearchStateBuilder();
 		
 		builder.setWhiteWalkerStatus(state.getWhiteWalkerStatus())
-			.setDragonStoneCarried(state.getDragonStoneCarried());
+			.setDragonGlassCarried(state.getDragonGlassCarried());
 		
 		switch(action) {
 			case MOVE_DOWN:
@@ -346,7 +357,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 				}
 				
 				builder.setWhiteWalkerStatus(newWhiteWalkerState);
-				builder.setDragonStoneCarried(state.getDragonStoneCarried() - 1);
+				builder.setDragonGlassCarried(state.getDragonGlassCarried() - 1);
 			} break;
 		}
 		
@@ -362,13 +373,22 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		 else
 			newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
 		
-		if(action != GOTSearchAction.STAB || !location.equals(this.dragonStoneLocation))
+		builder.setPickedUpDragonGlass(state.getPickedUpDragonGlass());
+		
+		if(action == GOTSearchAction.STAB)
+			builder.setPickedUpDragonGlass(false);
+		 
+		if(action != GOTSearchAction.STAB || !newLocation.equals(this.dragonStoneLocation) 
+				|| state.getDragonGlassCarried() != this.maxDragonGlass)
 			newCurrentlyExplored[newRow][newColumn] = true;
 		
 		builder.setCurrentlyExplored(newCurrentlyExplored);
 		
-		if(newLocation.equals(this.dragonStoneLocation) && action != GOTSearchAction.STAB)
-			builder.setDragonStoneCarried(this.maxDragonGlass);
+		if(newLocation.equals(this.dragonStoneLocation) && action != GOTSearchAction.STAB) {
+			builder.setDragonGlassCarried(this.maxDragonGlass);
+			if(state.getDragonGlassCarried() != this.maxDragonGlass)
+				builder.setPickedUpDragonGlass(true);
+		}
 			
 		return builder.build();
 	}
@@ -381,7 +401,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		
 		switch(action) {
 			case STAB: {
-				if(state.getDragonStoneCarried() == 0)
+				if(state.getDragonGlassCarried() == 0)
 					return false;
 				
 				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
@@ -478,10 +498,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			stateGrid[location.getLeft()][location.getRight()] = GOTGameObject.OBSTACLE.toChar();
 		});
 		
-		for(int i = 0; i < state.getCurrentlyExplored().length; i++)
+		/*for(int i = 0; i < state.getCurrentlyExplored().length; i++)
 			for(int j = 0; j < state.getCurrentlyExplored()[i].length; j++)
 				if(state.getCurrentlyExplored()[i][j] != null && state.getCurrentlyExplored()[i][j])
-					stateGrid[i][j] = 'T';
+					stateGrid[i][j] = 'T';*/
 		
 		for(int i = 0; i < gridRows; i++)
 			for(int j = 0; j < gridColumns; j++)
@@ -494,7 +514,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			System.out.println();
 		}
 						
-		System.out.println("Dragon Stone Count: " + state.getDragonStoneCarried());
+		System.out.println("Dragon Glass Count: " + state.getDragonGlassCarried());
+		System.out.println("Picked Up Dragon Glass: " + state.getPickedUpDragonGlass());
 		System.out.println();
 	}
 }

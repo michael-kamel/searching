@@ -7,12 +7,12 @@ import searching.agents.SearchTreeNode;
 
 public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	
-	private final Optional<SearchTreeNode<T>> node;
+	private final Optional<SearchTreeNode<T, V>> node;
 	private final SearchProblem<T, V> problem;
 	private final int expandedNodesCount;
-	private final LinkedList<SearchTreeNode<T>> nodeSequence;
+	private final LinkedList<SearchTreeNode<T, V>> nodeSequence;
 	
-	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> node, 
+	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> node, 
 			int expandedNodesCount) {
 		this.problem = problem;
 		this.node = node;
@@ -20,7 +20,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		this.nodeSequence = getNodeSequence();
 	}
 	
-	public Optional<SearchTreeNode<T>> getNode() {
+	public Optional<SearchTreeNode<T, V>> getNode() {
 		return this.node; //goalNode
 	}
 
@@ -32,13 +32,13 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return expandedNodesCount;
 	}
 	
-	public LinkedList<SearchTreeNode<T>> getNodeSequence() {
+	public LinkedList<SearchTreeNode<T, V>> getNodeSequence() {
 		if(this.nodeSequence != null)
 			return this.nodeSequence;
 		
-		LinkedList<SearchTreeNode<T>> list = new LinkedList<SearchTreeNode<T>>();
+		LinkedList<SearchTreeNode<T, V>> list = new LinkedList<SearchTreeNode<T, V>>();
 		
-		Optional<SearchTreeNode<T>> node = this.node;
+		Optional<SearchTreeNode<T, V>> node = this.node;
 		while(node.isPresent()) {
 			list.addFirst(node.get()); 
 			node = node.get().getParent();
@@ -48,13 +48,17 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	}
 	
 	public void visualizeSolution() {
-		Iterable<SearchTreeNode<T>> solution = this.getNodeSequence();
+		Iterable<SearchTreeNode<T, V>> solution = this.getNodeSequence();
 		solution.forEach(node -> {
+			if(node.getParent().isPresent())
+				System.out.println(node.getAction().get() + ": " + problem.getActionCost(
+						node.getParent().get().getCurrentState(), node.getAction().get()));
+			
 			this.problem.visualize(node.getCurrentState());
 		});
 	}
 	
-	private void showNode(SearchTreeNode<T> node) {
+	private void showNode(SearchTreeNode<T, V> node) {
 		if(node.getParent().isPresent())
 			showNode(node.getParent().get());
 		
@@ -75,7 +79,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 
 	public static final class FailedSearchProblemSolution<T extends SearchState, V extends SearchAction> 
 			extends SearchProblemSolution<T, V> {
-		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> 
+		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}
@@ -83,7 +87,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	
 	public static final class BottomProblemSolution<T extends SearchState, V extends SearchAction> 
 			extends SearchProblemSolution<T, V> {
-		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T>> 
+		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}

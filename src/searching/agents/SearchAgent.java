@@ -16,16 +16,16 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 		this.maxTreeNodes = maxTreeNodes;
 	}
 	
-	public SearchProblemSolution<T, V> search(SearchProblem<T, V> problem, SearchStrategy<T> searchStrategy) {
-		SearchTreeNode<T> rootNode = new SearchTreeNode<T>(Optional.empty(), 0, 
-				problem.getInitialState(), SearchAction.NoAction(), 0);
+	public SearchProblemSolution<T, V> search(SearchProblem<T, V> problem, SearchStrategy<T, V> searchStrategy) {
+		SearchTreeNode<T, V> rootNode = new SearchTreeNode<T, V>(Optional.empty(), 0, 
+				problem.getInitialState(), Optional.empty(), 0);
 		
 		searchStrategy.addNode(rootNode);
 		int count = 0; //number of _expanded_ nodes, so far
 		
 		while(count <= maxTreeNodes) {
 			//gets the next node; dequeuing/popping (the data structure is strategy-dependant)
-			Optional<SearchTreeNode<T>> nodeToCheck = searchStrategy.getNext();  
+			Optional<SearchTreeNode<T, V>> nodeToCheck = searchStrategy.getNext();  
 			
 			if(!nodeToCheck.isPresent()) //emptied the data structure; no more nodes to expand 
 				return SearchProblemSolution.NoSolution(problem, count); 

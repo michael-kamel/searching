@@ -19,7 +19,7 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 		return this.possibleActions;
 	}
 	
-	public long pathCost(SearchTreeNode<T> node) {
+	public long pathCost(SearchTreeNode<T, V> node) {
 		return node.getCost();
 	}
  
@@ -30,11 +30,11 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	 * @param nodeToCheck
 	 * @return an Iterable of all possible next nodes
 	 */
-	public Iterable<SearchTreeNode<T>> expand(SearchTreeNode<T> nodeToCheck) {
+	public Iterable<SearchTreeNode<T, V>> expand(SearchTreeNode<T, V> nodeToCheck) {
 		T currentState = nodeToCheck.getCurrentState();
 		
 		//newNodes: all possible nodes from curr node
-		LinkedList<SearchTreeNode<T>> newNodes = new LinkedList<SearchTreeNode<T>>();
+		LinkedList<SearchTreeNode<T, V>> newNodes = new LinkedList<SearchTreeNode<T, V>>();
 		
 		this.getPossibleActions().forEach(new Consumer<V>() {//Consumer::FunctionalInterface
 			@Override
@@ -42,11 +42,11 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 				if(canTransition(currentState, action)) {
 					T newState = transition(nodeToCheck.getCurrentState(), action);
 					
-					SearchTreeNode<T> newNode = new SearchTreeNode<T>(Optional.of(nodeToCheck), 
+					SearchTreeNode<T, V> newNode = new SearchTreeNode<T, V>(Optional.of(nodeToCheck), 
 							/* cost from root to nodeToCheck(parent node of the new node)  
 							   + cost of action we executed to get the new node
 							*/
-							nodeToCheck.getCost() + getActionCost(action), newState, action, 
+							nodeToCheck.getCost() + getActionCost(currentState, action), newState, Optional.of(action), 
 							nodeToCheck.getDepth()+1); 
 					newNodes.add(newNode);
 				}
@@ -68,5 +68,5 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 	
 	public abstract void visualize(T state); //visualizes one state
 	
-	protected abstract long getActionCost(V action);
+	protected abstract long getActionCost(T state, V action);
 }

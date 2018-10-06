@@ -4,7 +4,7 @@ public enum GOTGameObject{
 	JON_SNOW('J'),
 	WHITE_WALKER('W'),
 	OBSTACLE('O'),
-	DRAGON_STONE('D'),
+	DRAGON_STONE('S'),
 	EMPTY('.'),
 	DEAD_WHITE_WALKER('X');
 	

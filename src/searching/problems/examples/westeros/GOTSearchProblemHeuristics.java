@@ -29,8 +29,7 @@ public class GOTSearchProblemHeuristics {
 				
 				long whiteWalkersRemainingStabCount = ((long)Math.ceil(((whiteWalkersRemaining / 3.0))));
 				
-				return (whiteWalkersRemainingStabCount * problem.getActionCost(GOTSearchAction.MOVE_DOWN))+
-						(whiteWalkersRemainingStabCount * problem.getActionCost(GOTSearchAction.STAB));
+				return (whiteWalkersRemainingStabCount * problem.getActionCost(state, GOTSearchAction.STAB));
 		};
 	}
 	
@@ -54,8 +53,8 @@ public class GOTSearchProblemHeuristics {
 				.mapToLong(whiteWalkerState -> Geomtry.ManhattanDistance(currentLocation, whiteWalkerState.getLeft()))
 				.max().orElse(0);
 			
-			return ((maxDistance - 1) * problem.getActionCost(GOTSearchAction.MOVE_DOWN)) + 
-					problem.getActionCost(GOTSearchAction.STAB);
+			return ((maxDistance - 1) * problem.getActionCost(state, GOTSearchAction.MOVE_DOWN)) + 
+					problem.getActionCost(state, GOTSearchAction.STAB);
 		};
 	}
 			
@@ -90,8 +89,8 @@ public class GOTSearchProblemHeuristics {
 				.mapToLong(whiteWalkerState -> Geomtry.ManhattanDistance(currentLocation, whiteWalkerState.getLeft()))
 				.min().orElse(0);
 			
-			return ((minDistance - 1) * problem.getActionCost(GOTSearchAction.MOVE_DOWN))
-				+ problem.getActionCost(GOTSearchAction.STAB);
+			return ((minDistance - 1) * problem.getActionCost(state, GOTSearchAction.MOVE_DOWN))
+				+ problem.getActionCost(state, GOTSearchAction.STAB);
 		};
 	}
 }

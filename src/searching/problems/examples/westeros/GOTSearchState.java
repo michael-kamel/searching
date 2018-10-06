@@ -10,19 +10,23 @@ public class GOTSearchState extends SearchState {
 	private final Tuple<Integer, Integer> location;
 	private final ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus; //false: alive  true: dead
 	private final Boolean[][] currentlyExplored;
+	private boolean pickedUpDragonGlass = false;
 	
 	public GOTSearchState(int dragonGlassCarried, Tuple<Integer, Integer> location, 
-			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus, Boolean[][] currentlyExplored) {
+			ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus, Boolean[][] currentlyExplored,
+			boolean pickedUpDragonGlass) {
 		this.dragonGlassCarried = dragonGlassCarried;
 		this.location = location;
 		this.whiteWalkerStatus = whiteWalkerStatus;
 		this.currentlyExplored = currentlyExplored;
+		this.pickedUpDragonGlass = pickedUpDragonGlass;
+		
 	}
 
-	public int getDragonStoneCarried() {
-		return this.dragonGlassCarried;
+	public boolean getPickedUpDragonGlass() {
+		return this.pickedUpDragonGlass;
 	}
-
+	
 	public Tuple<Integer, Integer> getLocation() {
 		return this.location;
 	}
@@ -52,13 +56,19 @@ public class GOTSearchState extends SearchState {
 	
 	
 	public static class GOTSearchStateBuilder{
-		private int dragonStoneCarried;
+		private int dragonGlassCarried;
 		private Tuple<Integer, Integer> location;
 		private ArrayList<Tuple<Tuple<Integer, Integer>, Boolean>> whiteWalkerStatus; //false: alive  true: dead
 		private Boolean[][] currentlyExplored;
+		private boolean pickedUpDragonGlass;
 		
-		public GOTSearchStateBuilder setDragonStoneCarried(int dragonStoneCarried) {
-			this.dragonStoneCarried = dragonStoneCarried;
+		public GOTSearchStateBuilder setPickedUpDragonGlass(boolean pickedUpDragonGlass) {
+			this.pickedUpDragonGlass = pickedUpDragonGlass;
+			return this;
+		}
+		
+		public GOTSearchStateBuilder setDragonGlassCarried(int dragonGlassCarried) {
+			this.dragonGlassCarried = dragonGlassCarried;
 			return this;
 		}
 		
@@ -78,8 +88,8 @@ public class GOTSearchState extends SearchState {
 		}
 		
 		public GOTSearchState build() {
-			return new GOTSearchState(this.dragonStoneCarried, this.location, this.whiteWalkerStatus, 
-					this.currentlyExplored);
+			return new GOTSearchState(this.dragonGlassCarried, this.location, this.whiteWalkerStatus, 
+					this.currentlyExplored, this.pickedUpDragonGlass);
 		}
 	}
 }
