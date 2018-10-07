@@ -18,13 +18,14 @@ public class TestSaveWesteros {
 	
 	public static void main(String[] args) {
 		try {
-			char[][] grid = 
-				{
-						{'O', 'O', 'W', 'W'},
-						{'W', 'O', 'S', '.'},
-						{'.', 'W', '.', '.'},
-						{'W', 'O', '.', 'J'},
-				};
+			char[][] grid = genGrid(6,6);
+//			char[][] grid =  
+//				{
+//						{'O', 'O', 'W', 'W'},
+//						{'W', 'O', 'S', '.'},
+//						{'.', 'W', '.', '.'},
+//						{'W', 'O', '.', 'J'},
+//				};
 			search(grid, "AS1", false);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
