@@ -24,7 +24,7 @@ public class TestSaveWesteros {
 					{'.', 'W', '.', '.'},
 					{'W', 'O', '.', 'J'},
 			};
-		search(grid, "GR2", true);
+		search(grid, "GR2", false);
 	}
 	
 	public static void search(char[][] grid, String strategy, boolean visualize) {
@@ -37,7 +37,7 @@ public class TestSaveWesteros {
 			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
 			System.out.println("Max cost: " + problem.getMaxPathCost());
 			problem.visualize();
-			System.out.println("Press any key to solve");
+			System.out.println("Press enter to solve");
 			SearchProblemSolution<GOTSearchState, GOTSearchAction> solution = agent.search(problem, searchStrategy);
 			System.in.read();
 			if(solution instanceof SearchProblemSolution.FailedSearchProblemSolution) {
@@ -49,9 +49,9 @@ public class TestSaveWesteros {
 			} else {
 				System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
 				System.out.println("Cost: " + solution.getNode().get().getCost());
-				System.out.println("Press any key to visualize solution...");
+				System.out.println("Press enter to visualize solution...");
 				System.in.read();
-				solution.visualizeSolution(!visualize); //!visualize == visualiza actionsOnly
+				solution.visualizeSolution(!visualize, false); //!visualize == visualiza actionsOnly
 			}
 		} catch(Exception e) {
 			System.out.println(e.getMessage());

@@ -12,15 +12,13 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	private final SearchProblem<T, V> problem;
 	private final int expandedNodesCount;
 	private final LinkedList<SearchTreeNode<T, V>> nodeSequence;
-	private Visualizer visualizer;
 	
 	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> node, 
-			int expandedNodesCount, Visualizer visualizer) {
+			int expandedNodesCount) {
 		this.problem = problem;
 		this.node = node;
 		this.expandedNodesCount = expandedNodesCount;
 		this.nodeSequence = getNodeSequence();
-		this.visualizer = visualizer;
 	}
 	
 	public Optional<SearchTreeNode<T, V>> getNode() {
@@ -50,13 +48,14 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return list;
 	}
 	
-	public void visualizeSolution(boolean actionsOnly) {
+	public void visualizeSolution(boolean actionsOnly, boolean showActionCost) {
 		
 		Iterable<SearchTreeNode<T, V>> solution = this.getNodeSequence();
 		solution.forEach(node -> {
 			if(node.getParent().isPresent())
-				this.visualizer.visualizeLine(node.getAction().get() + ": " + problem.getActionCost(
-						node.getParent().get().getCurrentState(), node.getAction().get()));
+				this.problem.getVisualizer().visualizeLine(node.getAction().get() +
+						(showActionCost ? ": " + problem.getActionCost(
+						node.getParent().get().getCurrentState(), node.getAction().get()) : ""));
 			
 			if(!actionsOnly)
 				this.problem.visualize(node.getCurrentState());
@@ -67,14 +66,14 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		if(node.getParent().isPresent())
 			showNode(node.getParent().get());
 		
-		this.visualizer.visualizeLine(node.getCurrentState().toString());
+		this.problem.getVisualizer().visualizeLine(node.getCurrentState().toString());
 	}
 	
 	public void showNodeSequence() {//sequence of any nodes (not necessarily a solution)
 		if(this.node.isPresent()) {
 			showNode(this.node.get());
 		} else {
-			this.visualizer.visualizeLine("No Solution");
+			this.problem.getVisualizer().visualizeLine("No Solution");
 		}
 	}
 	
@@ -86,7 +85,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 			extends SearchProblemSolution<T, V> {
 		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
-			super(problem, node, expandedNodesCount, null);
+			super(problem, node, expandedNodesCount);
 		}
 	}
 	
@@ -94,7 +93,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 			extends SearchProblemSolution<T, V> {
 		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
-			super(problem, node, expandedNodesCount, null);
+			super(problem, node, expandedNodesCount);
 		}
 	}
 

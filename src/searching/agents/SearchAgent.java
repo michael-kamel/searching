@@ -31,7 +31,7 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 				return SearchProblemSolution.NoSolution(problem, count); 
 			
 			if(problem.goalTest(nodeToCheck.get().getCurrentState()))
-				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count, problem.getVisualizer());
+				return new SearchProblemSolution<T, V>(problem, Optional.of(nodeToCheck.get()), count);
 			
 			searchStrategy.addNodes(problem.expand(nodeToCheck.get()));//pushes/queues nodes
 			count++; 
