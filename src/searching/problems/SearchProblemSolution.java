@@ -50,14 +50,16 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return list;
 	}
 	
-	public void visualizeSolution() {
+	public void visualizeSolution(boolean actionsOnly) {
+		
 		Iterable<SearchTreeNode<T, V>> solution = this.getNodeSequence();
 		solution.forEach(node -> {
 			if(node.getParent().isPresent())
 				this.visualizer.visualizeLine(node.getAction().get() + ": " + problem.getActionCost(
 						node.getParent().get().getCurrentState(), node.getAction().get()));
 			
-			this.problem.visualize(node.getCurrentState());
+			if(!actionsOnly)
+				this.problem.visualize(node.getCurrentState());
 		});
 	}
 	

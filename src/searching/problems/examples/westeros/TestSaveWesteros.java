@@ -49,11 +49,9 @@ public class TestSaveWesteros {
 			} else {
 				System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
 				System.out.println("Cost: " + solution.getNode().get().getCost());
-				if(visualize) {
-					System.out.println("Press any key to visualize solution...");
-					System.in.read();
-					solution.visualizeSolution();
-				}
+				System.out.println("Press any key to visualize solution...");
+				System.in.read();
+				solution.visualizeSolution(!visualize); //!visualize == visualiza actionsOnly
 			}
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
