@@ -18,7 +18,7 @@ import searching.utils.Tuple;
 import searching.visualizers.ConsoleVisualizer;
 import searching.visualizers.Visualizer;
 
-public class TestGOT {
+public class TestSaveWesteros {
 	public static void main(String[] args) {
 		/*try {
 			Visualizer visualizer = new ConsoleVisualizer();
@@ -88,7 +88,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -146,7 +146,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -208,7 +208,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -275,7 +275,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -342,7 +342,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -396,7 +396,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -470,7 +470,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -544,7 +544,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -614,7 +614,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -686,7 +686,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -762,7 +762,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -842,7 +842,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -911,7 +911,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -980,7 +980,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -1055,7 +1055,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -1139,7 +1139,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			
@@ -1200,7 +1200,7 @@ public class TestGOT {
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
-					GOTSearchProblemHeuristics.furthestWhiteWalkerAndStabHeuristic(problem);
+					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			

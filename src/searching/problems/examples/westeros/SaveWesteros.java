@@ -235,7 +235,6 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	/**
 	 * Floyd Warshall: calculates the distance between any two nodes in the graph
 	 * 
-	 * 
 	 */
 	private void calculateLongestPathCost() {
 		int maxCost = 0;
@@ -447,7 +446,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return true;
 	}
 
-	public boolean isValidLocation(Tuple<Integer, Integer> location) {
+	private boolean isValidLocation(Tuple<Integer, Integer> location) {
 		//lower bounds; reduction by not allowing transition to these locations
 		if(location.getLeft() >= this.gridRows || location.getLeft() < this.rowLowerBound)
 			return false;
