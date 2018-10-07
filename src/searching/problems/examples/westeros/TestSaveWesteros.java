@@ -20,17 +20,30 @@ import searching.visualizers.Visualizer;
 
 public class TestSaveWesteros {
 	public static void main(String[] args) {
-		/*try {
-			Visualizer visualizer = new ConsoleVisualizer();
-			SaveWesteros problem = genSaveWesteros(4, 4, 4, 4, 2, visualizer);
-			SearchStrategy<GOTSearchState, GOTSearchAction> strategy = 
-					new UniformCostSearchStrategy<GOTSearchState, GOTSearchAction>();
-			
-			solveSaveWesteros(problem, strategy, 1000000);
-		} catch (SearchProblemException | IOException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}*/
+		sampleProblem1();
+//		try {
+//			Visualizer visualizer = new ConsoleVisualizer();
+//			SaveWesteros problem = genSaveWesteros(4, 4, 4, 4, 2, visualizer);
+//			SearchStrategy<GOTSearchState, GOTSearchAction> strategy = 
+//					new UniformCostSearchStrategy<GOTSearchState, GOTSearchAction>();
+//			
+//			solveSaveWesteros(problem, strategy, 1000000);
+//		} catch (SearchProblemException | IOException e) {
+//			System.out.println(e.getMessage());
+//			e.printStackTrace();
+//		}
+//		try {
+//			Visualizer visualizer = new ConsoleVisualizer();
+//			SaveWesteros problem = genSaveWesteros(4, 4, 4, 4, 2, visualizer);
+//			SearchStrategy<GOTSearchState, GOTSearchAction> strategy =
+//					new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(GOTSearchProblemHeuristics.stabHeuristic(problem));
+//			
+//			solveSaveWesteros(problem, strategy, 1000000);
+//		} catch (SearchProblemException | IOException e) {
+//			System.out.println(e.getMessage());
+//			e.printStackTrace();
+//		}
+		
 		//GOTSearchProblemTest();
 		//GOTHardCodedSearchProblem1Test();
 		//GOTHardCodedSearchProblem2Test();
@@ -79,7 +92,49 @@ public class TestSaveWesteros {
 			solution.visualizeSolution();
 		}
 	}
-	
+	public static void sampleProblem1() {
+		try {
+			char[][] grid = 
+			{
+					{'O', 'O', 'W', 'W'},
+					{'W', 'O', 'S', '.'},
+					{'.', 'W', '.', '.'},
+					{'W', 'O', '.', 'J'},
+			};
+			int dragonGlassCapacity = 4;
+			Visualizer visualizer = new ConsoleVisualizer();
+			SaveWesteros problem = new SaveWesteros(5, 5, grid, dragonGlassCapacity, visualizer);
+			HeuristicFunction<GOTSearchState> stabHeuristic = GOTSearchProblemHeuristics.stabHeuristic(problem);
+			HeuristicFunction<GOTSearchState> nearestHeuristic = GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
+			HeuristicFunction<GOTSearchState> nstabHeuristic = GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
+			SearchStrategy<GOTSearchState, GOTSearchAction> astar = 
+					new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(nearestHeuristic);
+			SearchStrategy<GOTSearchState, GOTSearchAction> ucs = 
+					new UniformCostSearchStrategy<GOTSearchState, GOTSearchAction>();
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
+			System.out.println("Max cost: " + problem.getMaxPathCost());
+			problem.visualize();
+			System.out.println("Press any key to solve");
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> solution = agent.search(problem, astar);
+			System.in.read();
+			if(solution instanceof SearchProblemSolution.FailedSearchProblemSolution) {
+				System.out.println("No Solution");
+				System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+			} else if(solution instanceof SearchProblemSolution.BottomProblemSolution) {
+				System.out.println("Resources Exhausted");
+				System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+			} else {
+				System.out.println("Nodes expanded: " + solution.getExpandedNodesCount());
+				System.out.println("Cost: " + solution.getNode().get().getCost());
+				System.out.println("Press any key to visualize solution...");
+				System.in.read();
+				solution.visualizeSolution();
+			}
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
 	public static void GOTSearchProblemTest() {
 		try {
 			Visualizer visualizer = new ConsoleVisualizer();

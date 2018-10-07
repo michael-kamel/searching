@@ -3,7 +3,8 @@ package searching.problems.examples.westeros;
 import java.util.ArrayList;
 import java.util.Random;
 import searching.exceptions.SearchProblemException;
-import searching.exceptions.SearchProblemGameConstructionConstraintsViolation;
+import searching.exceptions.GameConstructionConstraintsViolation;
+import searching.exceptions.UnknownGameObjectException;
 import searching.problems.SearchProblem;
 import searching.problems.examples.westeros.GOTSearchState.GOTSearchStateBuilder;
 import searching.utils.Geomtry;
@@ -58,20 +59,68 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		calculateLongestPathCost();
 	}
 	
+	public SaveWesteros(int i, int j, char[][] grid, int maxDragonGlass, Visualizer visualizer) throws SearchProblemException {
+		super(GOTSearchAction.getAll(), visualizer);
+		this.maxDragonGlass = maxDragonGlass;
+		this.fromGrid(grid);
+		calculateLowerBounds();
+		calculateLongestPathCost();
+	}
+
 	public int getObstacleCount() {
 		return this.obstacleCount;
 	}
 	
-	private void initGrid(int width, int height) throws SearchProblemGameConstructionConstraintsViolation {
+	private void fromGrid(char[][] grid) throws GameConstructionConstraintsViolation, UnknownGameObjectException {
+		if(GOTGameObject.fromChar(grid[grid.length - 1][grid[grid.length - 1].length - 1]) != GOTGameObject.JON_SNOW)
+			throw new GameConstructionConstraintsViolation("Jon Snow must be at the bottom right cell");
+		
+		this.gridRows = grid.length;
+		this.gridColumns = grid[0].length;
+		ArrayList<Tuple<Integer, Integer>> whiteWalkers = new ArrayList<Tuple<Integer, Integer>>();
+		ArrayList<Tuple<Integer, Integer>> obstacles = new ArrayList<Tuple<Integer, Integer>>();
+		Tuple<Integer, Integer> dragonStone = null;
+		
+		for(int i = 0; i < grid.length; i++) {
+			if(grid[i].length != this.gridColumns)
+				throw new GameConstructionConstraintsViolation("Grid must be of a rectangular shape");
+			for(int j = 0; j < grid[i].length; j++) {
+				switch(GOTGameObject.fromChar(grid[i][j])) {
+					case WHITE_WALKER: whiteWalkers.add(new Tuple<Integer, Integer>(i, j)); break;
+					case OBSTACLE: obstacles.add(new Tuple<Integer, Integer>(i, j)); break;
+					case DEAD_WHITE_WALKER: 
+						throw new GameConstructionConstraintsViolation("Initial grid can not have a dead white walker");
+					case DRAGON_STONE:
+						if(dragonStone == null)
+							dragonStone = new Tuple<Integer, Integer>(i, j);
+						else
+							throw new GameConstructionConstraintsViolation("Grid can not have more than one dragon stone");
+						break;
+					case JON_SNOW:
+						if(i != grid.length - 1 || j != grid[grid.length -1].length - 1)
+							throw new GameConstructionConstraintsViolation("Grid must only have one Jon Snow");
+					default:break;
+				}
+			}
+		}
+		this.whiteWalkersCount = whiteWalkers.size();
+		this.obstacleCount = obstacles.size();
+		this.whiteWalkerLocations = whiteWalkers;
+		this.obstacleLocations = obstacles;
+		this.dragonStoneLocation = dragonStone;
+		this.genGrid(grid[0].length, grid.length, whiteWalkers, obstacles, dragonStone);
+	}
+	
+	private void initGrid(int width, int height) throws GameConstructionConstraintsViolation {
 		if(width < 4)
-			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a width of 4 units or more");
+			throw new GameConstructionConstraintsViolation("Grid must have a width of 4 units or more");
 		if(height < 4)
-			throw new SearchProblemGameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
+			throw new GameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
 		
 		int gridCellCount = width*height;
 		int requiredGridCellCount = 2 + whiteWalkersCount + obstacleCount;
 		if(gridCellCount < requiredGridCellCount)
-			throw new SearchProblemGameConstructionConstraintsViolation("Grid size can't accomodate given parameters for the problem");
+			throw new GameConstructionConstraintsViolation("Grid size can't accomodate given parameters for the problem");
 		
 		this.grid = new GOTGameObject[height][width];
 		
@@ -84,7 +133,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	
 	private void genGrid(int width, int height, ArrayList<Tuple<Integer, Integer>> whiteWalkersLocations,
 			ArrayList<Tuple<Integer, Integer>> obstacleLocations,
-			Tuple<Integer, Integer> dragonStoneLocation) throws SearchProblemGameConstructionConstraintsViolation {
+			Tuple<Integer, Integer> dragonStoneLocation) throws GameConstructionConstraintsViolation {
 		initGrid(width, height);
 		whiteWalkersLocations.forEach(whiteWalkerLocation -> {
 			this.grid[whiteWalkerLocation.getLeft()][whiteWalkerLocation.getRight()] = GOTGameObject.WHITE_WALKER;
@@ -98,7 +147,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	}
 
 	private void genGrid(int width, int height, int whiteWalkersCount, int obstacleCount) 
-			throws SearchProblemGameConstructionConstraintsViolation {
+			throws GameConstructionConstraintsViolation {
 		initGrid(width, height);
 		Random rnd = new Random();
 		boolean dragonStonePlaced = false;
