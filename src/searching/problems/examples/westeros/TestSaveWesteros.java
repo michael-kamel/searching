@@ -20,7 +20,7 @@ import searching.visualizers.Visualizer;
 
 public class TestSaveWesteros {
 	public static void main(String[] args) {
-		sampleProblem1();
+		//sampleProblem1();
 //		try {
 //			Visualizer visualizer = new ConsoleVisualizer();
 //			SaveWesteros problem = genSaveWesteros(4, 4, 4, 4, 2, visualizer);
@@ -54,7 +54,7 @@ public class TestSaveWesteros {
 		//GOTHardCodedSearchProblem7Test();
 		//GOTHardCodedSearchProblem7_2Test();
 		//GOTHardCodedSearchProblem8Test();
-		//GOTHardCodedSearchProblem9Test();
+		GOTHardCodedSearchProblem9Test();
 		//GOTHardCodedSearchProblem10Test();
 		//GOTHardCodedSearchProblem11Test();
 		//GOTHardCodedSearchProblem12Test();
@@ -816,7 +816,7 @@ public class TestSaveWesteros {
 			HeuristicFunction<GOTSearchState> stabHeurisitc = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> furthestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.furthestWhiteWalkerHeuristic(problem);
-			HeuristicFunction<GOTSearchState> furthestWhiteWalkerAndStabHeurisitc = 
+			HeuristicFunction<GOTSearchState> nearestWhiteWalkerAndStabHeurisitc = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestWhiteWalkerHeuristic = 
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
@@ -826,12 +826,12 @@ public class TestSaveWesteros {
 			SearchStrategy<GOTSearchState, GOTSearchAction> bfsSearchStrategy = new BreadthFirstSearchStrategy<GOTSearchState, GOTSearchAction>();
 			SearchStrategy<GOTSearchState, GOTSearchAction> dfsSearchStrategy = new DepthFirstSearchSearchStrategy<GOTSearchState, GOTSearchAction>();
 			SearchStrategy<GOTSearchState, GOTSearchAction> idsSearchStrategy = new IterativeDeepeningSearchStrategy<GOTSearchState, GOTSearchAction>();
-			SearchStrategy<GOTSearchState, GOTSearchAction> greedySearchStrategy = new GreedySearchStrategy<GOTSearchState, GOTSearchAction>(nearestWhiteWalkerHeuristic);
-			SearchStrategy<GOTSearchState, GOTSearchAction> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(furthestWhiteWalkerAndStabHeurisitc);
+			SearchStrategy<GOTSearchState, GOTSearchAction> greedySearchStrategy = new GreedySearchStrategy<GOTSearchState, GOTSearchAction>(furthestWhiteWalkerHeuristic);
+			SearchStrategy<GOTSearchState, GOTSearchAction> astarSearchStrategy = new AStarSearchStrategy<GOTSearchState, GOTSearchAction>(nearestWhiteWalkerHeuristic);
 			problem.visualize();
 			System.out.println("Max cost: " + problem.getMaxPathCost());
 			System.in.read();
-			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, astarSearchStrategy);
+			SearchProblemSolution<GOTSearchState, GOTSearchAction> sol = agent.search(problem, bfsSearchStrategy);
 			if(sol instanceof SearchProblemSolution.FailedSearchProblemSolution) {
 				System.out.println("No Solution");
 			} else if(sol instanceof SearchProblemSolution.BottomProblemSolution) {
