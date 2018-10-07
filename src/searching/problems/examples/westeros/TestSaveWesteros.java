@@ -1,21 +1,16 @@
 package searching.problems.examples.westeros;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 
 import searching.agents.SearchAgent;
-import searching.exceptions.SearchProblemException;
 import searching.problems.SearchProblemSolution;
 import searching.strategies.AStarSearchStrategy;
 import searching.strategies.BreadthFirstSearchStrategy;
 import searching.strategies.DepthFirstSearchSearchStrategy;
 import searching.strategies.GreedySearchStrategy;
-import searching.strategies.HeuristicFunction;
 import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.UniformCostSearchStrategy;
-import searching.utils.Tuple;
 import searching.visualizers.ConsoleVisualizer;
 import searching.visualizers.Visualizer;
 
