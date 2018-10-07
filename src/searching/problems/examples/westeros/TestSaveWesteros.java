@@ -103,7 +103,7 @@ public class TestSaveWesteros {
 			};
 			int dragonGlassCapacity = 4;
 			Visualizer visualizer = new ConsoleVisualizer();
-			SaveWesteros problem = new SaveWesteros(5, 5, grid, dragonGlassCapacity, visualizer);
+			SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, visualizer);
 			HeuristicFunction<GOTSearchState> stabHeuristic = GOTSearchProblemHeuristics.stabHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nearestHeuristic = GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem);
 			HeuristicFunction<GOTSearchState> nstabHeuristic = GOTSearchProblemHeuristics.nearestWhiteWalkerAndStabHeuristic(problem);

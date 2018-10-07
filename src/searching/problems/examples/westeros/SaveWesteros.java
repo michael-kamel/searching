@@ -59,7 +59,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		calculateLongestPathCost();
 	}
 	
-	public SaveWesteros(int i, int j, char[][] grid, int maxDragonGlass, Visualizer visualizer) throws SearchProblemException {
+	public SaveWesteros(char[][] grid, int maxDragonGlass, Visualizer visualizer) throws SearchProblemException {
 		super(GOTSearchAction.getAll(), visualizer);
 		this.maxDragonGlass = maxDragonGlass;
 		this.fromGrid(grid);
