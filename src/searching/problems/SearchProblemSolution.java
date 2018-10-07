@@ -2,9 +2,7 @@ package searching.problems;
 
 import java.util.LinkedList;
 import java.util.Optional;
-
 import searching.agents.SearchTreeNode;
-import searching.visualizers.Visualizer;
 
 public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	

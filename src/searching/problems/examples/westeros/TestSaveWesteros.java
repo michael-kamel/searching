@@ -17,14 +17,19 @@ import searching.visualizers.Visualizer;
 public class TestSaveWesteros {
 	
 	public static void main(String[] args) {
-		char[][] grid = 
-			{
-					{'O', 'O', 'W', 'W'},
-					{'W', 'O', 'S', '.'},
-					{'.', 'W', '.', '.'},
-					{'W', 'O', '.', 'J'},
-			};
-		search(grid, "GR2", false);
+		try {
+			char[][] grid = 
+				{
+						{'O', 'O', 'W', 'W'},
+						{'W', 'O', 'S', '.'},
+						{'.', 'W', '.', '.'},
+						{'W', 'O', '.', 'J'},
+				};
+			search(grid, "AS1", false);
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	
 	public static void search(char[][] grid, String strategy, boolean visualize) {
@@ -75,6 +80,68 @@ public class TestSaveWesteros {
 					GOTSearchProblemHeuristics.nearestWhiteWalkerHeuristic(problem));
 			default: throw new Exception("Unknown strategy string");
 		}
+	}
+	
+	public static char[][] genGrid(int rowsUpperBound, int columnsUpperBound) throws Exception {
+		if(rowsUpperBound < 4 || columnsUpperBound < 4) 
+			throw new Exception("Invalid grid size");
+		
+		Random rnd = new Random();
+		int rows = rnd.nextInt(rowsUpperBound - 3) + 4;
+		int columns = rnd.nextInt(columnsUpperBound - 3) + 4;
+		
+		char[][] grid = new char[rows][columns];
+		
+		for(int i = 0; i < rows; i++)
+			for(int j = 0; j < columns; j++)
+				grid[i][j] = '.';
+		
+		int availableNodes = rows * columns - 2;
+		
+		int whiteWalkersCount = rnd.nextInt(availableNodes / 2) + 1;
+		availableNodes -= whiteWalkersCount;
+		
+		int obstacleCount = rnd.nextInt(availableNodes / 2) + 1;
+		availableNodes -= obstacleCount;
+		
+		grid[rows - 1][columns - 1] = 'J';
+		
+		int rndRow = rnd.nextInt(rows);
+		int rndColumn = rnd.nextInt(columns);
+		boolean dragonStonePlaced = false;
+		
+		while(!dragonStonePlaced) {
+			if(grid[rndRow][rndColumn] != '.') {
+				rndRow = rnd.nextInt(rows);
+				rndColumn = rnd.nextInt(columns);
+				continue;
+			}
+			dragonStonePlaced = true;
+			grid[rndRow][rndColumn] = 'S';
+		}
+		
+		while(whiteWalkersCount > 0) {
+			if(grid[rndRow][rndColumn] != '.') {
+				rndRow = rnd.nextInt(rows);
+				rndColumn = rnd.nextInt(columns);
+				continue;
+			}
+			whiteWalkersCount--;
+			grid[rndRow][rndColumn] = 'W';
+		}
+		
+		while(obstacleCount > 0) {
+			if(grid[rndRow][rndColumn] != '.') {
+				rndRow = rnd.nextInt(rows);
+				rndColumn = rnd.nextInt(columns);
+				continue;
+			}
+			obstacleCount--;
+			grid[rndRow][rndColumn] = 'O';
+		}
+		
+		return grid;
+				
 	}
 	
 }
