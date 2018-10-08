@@ -18,6 +18,7 @@ public class TestSaveWesteros {
 	
 	public static void main(String[] args) {
 		try {
+//			char[][] grid = genGrid(6,6);
 			char[][] grid = 
 				{
 						{'O', 'O', 'W', 'W'},
@@ -25,12 +26,13 @@ public class TestSaveWesteros {
 						{'.', 'W', '.', '.'},
 						{'W', 'O', '.', 'J'},
 				};
-			search(grid, "ID", false, 4);
+			search(grid, "AS2", false, 4);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
+	
 	public static void search(char[][] grid, String strategy, boolean visualize) {
 		Random rnd = new Random();
 		search(grid, strategy, visualize, rnd.nextInt(10)+1);
@@ -41,7 +43,8 @@ public class TestSaveWesteros {
 			Visualizer visualizer = new ConsoleVisualizer();
 			SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, visualizer);
 			SearchStrategy<GOTSearchState, GOTSearchAction> searchStrategy = getStrategy(problem, strategy);
-			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, GOTSearchAction>(1000000);
+			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, 
+					GOTSearchAction>(1000000);
 			System.out.println("Max cost: " + problem.getMaxPathCost());
 			problem.visualize();
 			System.out.println("Press enter to solve");
@@ -66,7 +69,8 @@ public class TestSaveWesteros {
 		}
 	}
 	
-	public static SearchStrategy<GOTSearchState, GOTSearchAction> getStrategy(SaveWesteros problem, String strategy) throws Exception {
+	public static SearchStrategy<GOTSearchState, GOTSearchAction> getStrategy(SaveWesteros problem, 
+			String strategy) throws Exception {
 		switch(strategy) {
 			case "BF": return new BreadthFirstSearchStrategy<GOTSearchState, GOTSearchAction>();
 			case "DF": return new DepthFirstSearchSearchStrategy<GOTSearchState, GOTSearchAction>();

@@ -71,8 +71,13 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return this.obstacleCount;
 	}
 	
+	public long getMaxPathCost() {
+		return this.maxPathCost;
+	}
+	
 	private void fromGrid(char[][] grid) throws GameConstructionConstraintsViolation, UnknownGameObjectException {
-		if(GOTGameObject.fromChar(grid[grid.length - 1][grid[grid.length - 1].length - 1]) != GOTGameObject.JON_SNOW)
+		if( GOTGameObject.fromChar(grid[grid.length - 1][grid[grid.length - 1].length - 1]) 
+				!= GOTGameObject.JON_SNOW )
 			throw new GameConstructionConstraintsViolation("Jon Snow must be at the bottom right cell");
 		
 		this.gridRows = grid.length;
@@ -89,12 +94,14 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 					case WHITE_WALKER: whiteWalkers.add(new Tuple<Integer, Integer>(i, j)); break;
 					case OBSTACLE: obstacles.add(new Tuple<Integer, Integer>(i, j)); break;
 					case DEAD_WHITE_WALKER: 
-						throw new GameConstructionConstraintsViolation("Initial grid can not have a dead white walker");
+						throw new GameConstructionConstraintsViolation("Initial grid can not have a "
+								+ "dead white walker");
 					case DRAGON_STONE:
 						if(dragonStone == null)
 							dragonStone = new Tuple<Integer, Integer>(i, j);
 						else
-							throw new GameConstructionConstraintsViolation("Grid can not have more than one dragon stone");
+							throw new GameConstructionConstraintsViolation("Grid can not have more "
+									+ "than one dragon stone");
 						break;
 					case JON_SNOW:
 						if(i != grid.length - 1 || j != grid[grid.length -1].length - 1)
@@ -123,7 +130,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		int gridCellCount = width*height;
 		int requiredGridCellCount = 2 + whiteWalkersCount + obstacleCount;
 		if(gridCellCount < requiredGridCellCount)
-			throw new GameConstructionConstraintsViolation("Grid size can't accomodate given parameters for the problem");
+			throw new GameConstructionConstraintsViolation("Grid size can't accomodate given parameters for "
+					+ "the problem");
 		
 		this.grid = new GOTGameObject[height][width];
 		
@@ -285,8 +293,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	}
 	
 	/**
-	 * Floyd Warshall: calculates the distance between any two nodes in the graph
+	 * Floyd Warshall: calculates the shortest distance between any two 
+	 * reachable cells in the grid
 	 * 
+	 * returns the maximum of these distances between two reachable target cells 
 	 */
 	private void calculateLongestPathCost() {
 		int maxCost = 0;
@@ -315,7 +325,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			for(int nodeI = 0; nodeI < nodesCount; nodeI++)
 				for(int nodeJ = 0; nodeJ < nodesCount; nodeJ++) {
 					int newCost = cost[nodeI][nodeIdx] + cost[nodeIdx][nodeJ];
-					if(newCost < 0)
+					if(newCost < 0)//handles overflow when newCost= 2*Integer.MAX_VALUE
 						newCost = Integer.MAX_VALUE;
 					cost[nodeI][nodeJ] = Math.min(cost[nodeI][nodeJ], newCost);
 				}	
@@ -328,16 +338,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		for(int i = 0; i < nodesCount; i++)
 			for(int j = 0; j < nodesCount; j++)
 				if(i != j && (isTargetCell(i) && isTargetCell(j)))
-					if(cost[i][j] != Integer.MAX_VALUE)
+					if(cost[i][j] != Integer.MAX_VALUE)//if(reachable from each-other) 
 						if(cost[i][j] > maxCost)
-							//two target cells are not reachable from each other; infinite cost
 							maxCost = Math.max(maxCost, cost[i][j]);
 		
 		this.maxPathCost = maxCost;
-	}
-	
-	public long getMaxPathCost() {
-		return this.maxPathCost;
 	}
 	
 	@Override
@@ -419,6 +424,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		builder.setLocation(newLocation);
 		
 		Boolean[][] newCurrentlyExplored;
+		/*
+		 * reset currentlyExplored 2-D array after: 
+		 *  	a stab action 
+		 *		re-stocking on dragon-glasses (arriving to dragon-stone location after they reach 0) 
+		 * */
 		if(!action.equals(GOTSearchAction.STAB))
 			if(newLocation.equals(this.dragonStoneLocation) && state.getDragonGlassCarried() == 0)
 				newCurrentlyExplored = new Boolean[this.gridRows][this.gridColumns];
@@ -448,6 +458,16 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	}
 	
 	@Override
+	/**
+	 * checks if a state-action pair can generate a new state
+	 * stabbing is prohibited if the agent has zero dragon-glasses or no white walkers in any of the 
+	 * adjacent cells
+	 * 
+	 * movement is prohibited if the location is not valid (out of bounds/lower than calculated clustered
+	 * bounds)
+	 * or if there is an obstacle or an alive white walker 
+	 * or if the new location corresponds to a True in the currentlyExplored 2-D Array
+	 */
 	public boolean canTransition(GOTSearchState state, GOTSearchAction action) {
 		Tuple<Integer, Integer> location = state.getLocation();
 		int newRow = location.getLeft();
@@ -461,7 +481,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 				for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus())
 					if(!whiteWalkerState.getRight())
 						if(Geomtry.isAdjacent(whiteWalkerState.getLeft(), location))
-							return true;
+							return true;//if any of the alive white walkers is in adjacent cell, allow STAB
 				
 				return false;
 			}
@@ -498,6 +518,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return true;
 	}
 
+	/**
+	 * checks if a cell is about of bound or is lower than pre-calculated lower bound
+	 * @param location
+	 * @return boolean
+	 */
 	private boolean isValidLocation(Tuple<Integer, Integer> location) {
 		//lower bounds; reduction by not allowing transition to these locations
 		if(location.getLeft() >= this.gridRows || location.getLeft() < this.rowLowerBound)
@@ -517,10 +542,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		return true;
 	}
 	
-	/*
+	/**
 	 * visualizes the problem before searching begins
-	 * initial grid generation
-	 * */
+	 * initial grid generation pickedUpDragonGlass boolean
+	 */
 	public void visualize() {
 		for(int i = 0; i < this.gridRows; i++) {
 			for(int j = 0; j < this.gridColumns; j++) 
@@ -530,6 +555,11 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		}		
 	}
 	
+	/**
+	 * visualizes grid according to the current state
+	 * + number of dragon-glasses carried
+	 * + number 
+	 */
 	public void visualize(GOTSearchState state) {
 		Character[][] stateGrid = new Character[this.gridRows][this.gridColumns];
 		
@@ -568,8 +598,9 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 			this.getVisualizer().visualizeLine("");
 		}
 						
-		System.out.println("Dragon Glass Count: " + state.getDragonGlassCarried());
-		System.out.println("Picked Up Dragon Glass: " + state.getPickedUpDragonGlass());
-		System.out.println();
+		this.getVisualizer().visualizeLine("Dragon Glass Count: " + state.getDragonGlassCarried());
+		this.getVisualizer().visualizeLine("Picked Up Dragon Glass: " + state.getPickedUpDragonGlass());
+		this.getVisualizer().visualizeLine("");
+			
 	}
 }
