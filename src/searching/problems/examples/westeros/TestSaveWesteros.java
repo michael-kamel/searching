@@ -25,7 +25,7 @@ public class TestSaveWesteros {
 						{'.', 'W', '.', '.'},
 						{'W', 'O', '.', 'J'},
 				};
-			search(grid, "AS1", true, 1);
+			search(grid, "ID", false, 4);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -58,7 +58,7 @@ public class TestSaveWesteros {
 				System.out.println("Cost: " + solution.getNode().get().getCost());
 				System.out.println("Press enter to visualize solution...");
 				System.in.read();
-				solution.visualizeSolution(!visualize, true); //!visualize == visualiza actionsOnly
+				solution.visualizeSolution(!visualize, false); //!visualize == visualiza actionsOnly
 			}
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
