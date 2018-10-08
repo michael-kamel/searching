@@ -103,6 +103,9 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 				}
 			}
 		}
+		if(dragonStone == null)
+			throw new GameConstructionConstraintsViolation("Grid must have a dragon stone");
+		
 		this.whiteWalkersCount = whiteWalkers.size();
 		this.obstacleCount = obstacles.size();
 		this.whiteWalkerLocations = whiteWalkers;

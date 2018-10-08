@@ -25,17 +25,19 @@ public class TestSaveWesteros {
 						{'.', 'W', '.', '.'},
 						{'W', 'O', '.', 'J'},
 				};
-			search(grid, "AS1", false);
+			search(grid, "AS1", true, 1);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
 	public static void search(char[][] grid, String strategy, boolean visualize) {
+		Random rnd = new Random();
+		search(grid, strategy, visualize, rnd.nextInt(10)+1);
+	}
+	
+	public static void search(char[][] grid, String strategy, boolean visualize, int dragonGlassCapacity) {
 		try {
-			Random rnd = new Random();
-			int dragonGlassCapacity = rnd.nextInt(10) + 1;
 			Visualizer visualizer = new ConsoleVisualizer();
 			SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, visualizer);
 			SearchStrategy<GOTSearchState, GOTSearchAction> searchStrategy = getStrategy(problem, strategy);
@@ -56,7 +58,7 @@ public class TestSaveWesteros {
 				System.out.println("Cost: " + solution.getNode().get().getCost());
 				System.out.println("Press enter to visualize solution...");
 				System.in.read();
-				solution.visualizeSolution(!visualize, false); //!visualize == visualiza actionsOnly
+				solution.visualizeSolution(!visualize, true); //!visualize == visualiza actionsOnly
 			}
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
