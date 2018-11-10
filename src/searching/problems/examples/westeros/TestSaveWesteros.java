@@ -33,7 +33,7 @@ public class TestSaveWesteros {
 //						{'.', 'W', '.', '.'},
 //						{'W', 'O', '.', 'J'},
 //				};
-			search(grid, "AS2", true, 4);
+			genFOLProblem(grid, "/home/mike/dev/prolog/savewesteros.pl", 5);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -51,11 +51,16 @@ public class TestSaveWesteros {
 		KB.createNewFile();
 		FileWriter fileWriter = new FileWriter(KB);
 		
-		FOLExpGOTVisualizer visualizer = new FOLExpGOTVisualizer(fileWriter);
-		
-		SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, visualizer);
+		FOLExpGOTVisualizer folVisualizer = new FOLExpGOTVisualizer(fileWriter);
+		ConsoleGOTVisualizer consoleVisualizer = new ConsoleGOTVisualizer();
+		SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, consoleVisualizer);
 		problem.visualize();
-		visualizer.finalize();
+		System.out.println("Press any key to write KB.");
+		System.in.read();
+		problem.setVisualizer(folVisualizer);
+		problem.visualize();
+		folVisualizer.finalize();
+		System.out.println("KB written successfully");
 	}
 	
 	public static void search(char[][] grid, String strategy, boolean visualize, int dragonGlassCapacity) {
