@@ -5,19 +5,20 @@ import java.util.Random;
 import searching.exceptions.SearchProblemException;
 import searching.exceptions.GameConstructionConstraintsViolation;
 import searching.exceptions.UnknownGameObjectException;
+import searching.exceptions.VisualizationException;
 import searching.problems.SearchProblem;
 import searching.problems.examples.westeros.GOTSearchState.GOTSearchStateBuilder;
 import searching.utils.Geomtry;
 import searching.utils.Tuple;
-import searching.visualizers.Visualizer;
+import searching.visualizers.StateVisualizer;
 import searching.utils.ObjectUtils;
 
-public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction> {
+public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction, SaveWesteros> {
 	private GOTGameObject[][] grid;
 	private int gridRows;
 	private int gridColumns;
-	private ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations;
-	private ArrayList<Tuple<Integer,Integer>> obstacleLocations;
+	private ArrayList<Tuple<Integer, Integer>> whiteWalkerLocations;
+	private ArrayList<Tuple<Integer, Integer>> obstacleLocations;
 	private Tuple<Integer, Integer> dragonStoneLocation;
 	private int whiteWalkersCount;
 	private int maxDragonGlass;
@@ -27,7 +28,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	private int obstacleCount;
 	
 	public SaveWesteros(int width, int height, int whiteWalkersCount, int obstacleCount, 
-			int maxDragonGlass, Visualizer visualizer) 
+			int maxDragonGlass, StateVisualizer<SaveWesteros, GOTSearchState> visualizer) 
 			throws SearchProblemException {
 		super(GOTSearchAction.getAll(), visualizer);
 		this.gridRows = height;
@@ -44,7 +45,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	
 	public SaveWesteros(int width, int height, ArrayList<Tuple<Integer,Integer>> whiteWalkerLocations,
 			ArrayList<Tuple<Integer,Integer>> obstacleLocations, Tuple<Integer, Integer> dragonStoneLocation,
-			int maxDragonStones, Visualizer visualizer) throws SearchProblemException {
+			int maxDragonStones, StateVisualizer<SaveWesteros, GOTSearchState> visualizer) throws SearchProblemException {
 		super(GOTSearchAction.getAll(), visualizer);
 		this.gridRows = height;
 		this.gridColumns = width;
@@ -59,7 +60,8 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		calculateLongestPathCost();
 	}
 	
-	public SaveWesteros(char[][] grid, int maxDragonGlass, Visualizer visualizer) throws SearchProblemException {
+	public SaveWesteros(char[][] grid, int maxDragonGlass, 
+			StateVisualizer<SaveWesteros, GOTSearchState> visualizer) throws GameConstructionConstraintsViolation, UnknownGameObjectException {
 		super(GOTSearchAction.getAll(), visualizer);
 		this.maxDragonGlass = maxDragonGlass;
 		this.fromGrid(grid);
@@ -67,6 +69,42 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 		calculateLongestPathCost();
 	}
 
+	public GOTGameObject[][] getGrid() {
+		return this.grid;
+	}
+	
+	public Tuple<Integer, Integer> getDragonStoneLocation() {
+		return this.dragonStoneLocation;
+	}
+	
+	public int getGridRows() {
+		return gridRows;
+	}
+
+	public int getGridColumns() {
+		return gridColumns;
+	}
+
+	public ArrayList<Tuple<Integer, Integer>> getWhiteWalkerLocations() {
+		return whiteWalkerLocations;
+	}
+
+	public int getWhiteWalkersCount() {
+		return whiteWalkersCount;
+	}
+
+	public int getMaxDragonGlass() {
+		return maxDragonGlass;
+	}
+
+	public int getRowLowerBound() {
+		return rowLowerBound;
+	}
+
+	public ArrayList<Tuple<Integer, Integer>> getObstacleLocations() {
+		return this.obstacleLocations;
+	}
+	
 	public int getObstacleCount() {
 		return this.obstacleCount;
 	}
@@ -545,62 +583,19 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction>
 	/**
 	 * visualizes the problem before searching begins
 	 * initial grid generation pickedUpDragonGlass boolean
+	 * @throws VisualizationException 
 	 */
-	public void visualize() {
-		for(int i = 0; i < this.gridRows; i++) {
-			for(int j = 0; j < this.gridColumns; j++) 
-				this.getVisualizer().visualize(this.grid[i][j].toChar() + ", ");
-			
-			this.getVisualizer().visualizeLine("");
-		}		
+	public void visualize() throws VisualizationException {
+		this.visualize(getInitialState());	
 	}
 	
 	/**
 	 * visualizes grid according to the current state
 	 * + number of dragon-glasses carried
 	 * + number 
+	 * @throws VisualizationException 
 	 */
-	public void visualize(GOTSearchState state) {
-		Character[][] stateGrid = new Character[this.gridRows][this.gridColumns];
-		
-		state.getWhiteWalkerStatus().forEach(status -> {
-			if(status.getRight())
-				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = 
-					GOTGameObject.DEAD_WHITE_WALKER.toChar();
-			else
-				stateGrid[status.getLeft().getLeft()][status.getLeft().getRight()] = 
-					GOTGameObject.WHITE_WALKER.toChar();
-		});
-		
-		stateGrid[this.dragonStoneLocation.getLeft()][this.dragonStoneLocation.getRight()] = 
-				GOTGameObject.DRAGON_STONE.toChar();
-		
-		Tuple<Integer, Integer> jonSnowLocation = state.getLocation();
-		stateGrid[jonSnowLocation.getLeft()][jonSnowLocation.getRight()] = GOTGameObject.JON_SNOW.toChar();
-		
-		this.obstacleLocations.forEach(location -> {
-			stateGrid[location.getLeft()][location.getRight()] = GOTGameObject.OBSTACLE.toChar();
-		});
-		
-		/*for(int i = 0; i < state.getCurrentlyExplored().length; i++)
-			for(int j = 0; j < state.getCurrentlyExplored()[i].length; j++)
-				if(state.getCurrentlyExplored()[i][j] != null && state.getCurrentlyExplored()[i][j])
-					stateGrid[i][j] = 'T';*/
-		
-		for(int i = 0; i < gridRows; i++)
-			for(int j = 0; j < gridColumns; j++)
-				if(stateGrid[i][j] == null) 
-					stateGrid[i][j] = GOTGameObject.EMPTY.toChar();
-		
-		for(int i = 0; i < gridRows; i++) {
-			for(int j = 0; j < gridColumns; j++)
-				this.getVisualizer().visualize(stateGrid[i][j] + ", ");
-			this.getVisualizer().visualizeLine("");
-		}
-						
-		this.getVisualizer().visualizeLine("Dragon Glass Count: " + state.getDragonGlassCarried());
-		this.getVisualizer().visualizeLine("Picked Up Dragon Glass: " + state.getPickedUpDragonGlass());
-		this.getVisualizer().visualizeLine("");
-			
+	public void visualize(GOTSearchState state) throws VisualizationException {
+		this.getVisualizer().visualize(this, state);
 	}
 }

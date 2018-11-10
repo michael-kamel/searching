@@ -5,23 +5,24 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import searching.agents.SearchTreeNode;
-import searching.exceptions.SearchProblemException;
-import searching.visualizers.Visualizer;
+import searching.exceptions.GameConstructionConstraintsViolation;
+import searching.exceptions.VisualizationException;
+import searching.visualizers.StateVisualizer;
 
-public abstract class SearchProblem<T extends SearchState, V extends SearchAction> {
+public abstract class SearchProblem<T extends SearchState, V extends SearchAction, X extends SearchProblem<T, V, X>> {
 	private final Iterable<V> possibleActions;
-	private Visualizer visualizer;
+	private StateVisualizer<X, T> visualizer;
 	
-	public SearchProblem(Iterable<V> possibleActions, Visualizer visualizer) throws SearchProblemException {
+	public SearchProblem(Iterable<V> possibleActions, StateVisualizer<X, T> visualizer) throws GameConstructionConstraintsViolation {
 		this.possibleActions = possibleActions;
 		this.visualizer = visualizer;
 	}
 		
-	public Visualizer getVisualizer() {
+	public StateVisualizer<X, T> getVisualizer() {
 		return this.visualizer;
 	}
 	
-	public void setVisualizer(Visualizer visualizer) {
+	public void setVisualizer(StateVisualizer<X, T> visualizer) {
 		this.visualizer = visualizer;
 	}
 	
@@ -74,9 +75,9 @@ public abstract class SearchProblem<T extends SearchState, V extends SearchActio
 
 	public abstract boolean canTransition(T state, V action); 
 	
-	public abstract void visualize(); //visualizes problem itself
+	public abstract void visualize() throws VisualizationException; //visualizes problem itself
 	
-	public abstract void visualize(T state); //visualizes one state
+	public abstract void visualize(T state) throws VisualizationException; //visualizes one state
 	
 	protected abstract long getActionCost(T state, V action);
 }

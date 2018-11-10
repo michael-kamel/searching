@@ -16,7 +16,8 @@ public class SearchAgent<T extends SearchState, V extends SearchAction> {
 		this.maxTreeNodes = maxTreeNodes;
 	}
 	
-	public SearchProblemSolution<T, V> search(SearchProblem<T, V> problem, SearchStrategy<T, V> searchStrategy) {
+	public <W extends SearchProblem<T, V, W>>
+		SearchProblemSolution<T, V> search(SearchProblem<T, V, W> problem, SearchStrategy<T, V> searchStrategy) {
 		SearchTreeNode<T, V> rootNode = new SearchTreeNode<T, V>(Optional.empty(), 0, 
 				problem.getInitialState(), Optional.empty(), 0);
 		
