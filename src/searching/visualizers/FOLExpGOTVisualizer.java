@@ -69,6 +69,14 @@ public class FOLExpGOTVisualizer implements StateVisualizer<SaveWesteros, GOTSea
 				this.fileWriter.write(String.format("action(%s).\n", action.toString().toLowerCase()));
 			}
 			
+			int obstacleIdx = 0; 
+			for(Tuple<Integer, Integer> obstacleLocation : problem.getObstacleLocations()) {
+				String obstacleName = "obstacle_" + obstacleIdx++;
+				this.fileWriter.write(String.format("obstacle(%s).\n", obstacleName));
+				locationOfPredicates.add(String.format("locationOf(%s, (%s, %s)).\n", obstacleName,
+						obstacleLocation.getLeft(), obstacleLocation.getRight()));
+			}
+			
 			for(String locationOf : locationOfPredicates)
 				this.fileWriter.write(locationOf);
 			
