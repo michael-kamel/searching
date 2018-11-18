@@ -9,7 +9,8 @@ import searching.exceptions.GameConstructionConstraintsViolation;
 import searching.exceptions.VisualizationException;
 import searching.visualizers.StateVisualizer;
 
-public abstract class SearchProblem<T extends SearchState, V extends SearchAction, X extends SearchProblem<T, V, X>> {
+public abstract class SearchProblem<T extends SearchState, V extends SearchAction,
+	X extends SearchProblem<T, V, X>> {
 	private final Iterable<V> possibleActions;
 	private StateVisualizer<X, T> visualizer;
 	

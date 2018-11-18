@@ -589,6 +589,7 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction,
 		this.visualize(getInitialState());	
 	}
 	
+	
 	/**
 	 * visualizes grid according to the current state
 	 * + number of dragon-glasses carried
