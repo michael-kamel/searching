@@ -25,15 +25,14 @@ public class TestSaveWesteros {
 	
 	public static void main(String[] args) {
 		try {
-			char[][] grid = genGrid(4,4);
-//			char[][] grid = 
-//				{
-//						{'O', 'O', 'W', 'W'},
-//						{'W', 'O', 'S', '.'},
-//						{'.', 'W', '.', '.'},
-//						{'W', 'O', '.', 'J'},
-//				};
-			genFOLProblem(grid, "/home/mike/dev/prolog/savewesteros.pl", 5);
+			//char[][] grid = genGrid(4,4);
+			char[][] grid = 
+				{
+						{'W', 'W', '.'},
+						{'D', '.', 'O'},
+						{'O', '.', 'J'},
+				};
+			genFOLGrid(grid, "/home/mike/dev/prolog/savewesteros.pl", 1);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -45,7 +44,7 @@ public class TestSaveWesteros {
 		search(grid, strategy, visualize, rnd.nextInt(10)+1);
 	}
 	
-	public static void genFOLProblem(char[][] grid, String path, int dragonGlassCapacity) 
+	public static void genFOLGrid(char[][] grid, String path, int dragonGlassCapacity) 
 			throws IOException, VisualizationException, GameConstructionConstraintsViolation, UnknownGameObjectException {
 		File KB = new File(path);
 		KB.createNewFile();

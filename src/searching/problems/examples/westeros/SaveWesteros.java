@@ -160,10 +160,10 @@ public class SaveWesteros extends SearchProblem<GOTSearchState, GOTSearchAction,
 	}
 	
 	private void initGrid(int width, int height) throws GameConstructionConstraintsViolation {
-		if(width < 4)
-			throw new GameConstructionConstraintsViolation("Grid must have a width of 4 units or more");
-		if(height < 4)
-			throw new GameConstructionConstraintsViolation("Grid must have a height of 4 units or more");
+		if(width < 3)
+			throw new GameConstructionConstraintsViolation("Grid must have a width of 3 units or more");
+		if(height < 3)
+			throw new GameConstructionConstraintsViolation("Grid must have a height of 3 units or more");
 		
 		int gridCellCount = width*height;
 		int requiredGridCellCount = 2 + whiteWalkersCount + obstacleCount;

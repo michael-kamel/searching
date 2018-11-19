@@ -24,24 +24,22 @@ public class FOLExpGOTVisualizer implements StateVisualizer<SaveWesteros, GOTSea
 		this.stateName = "s0";
 	}
 	
-	//Dead
-	//LocationOf
-	//WhiteWalker
-	//JonSnow
-	//DragonGlassCarried
-	//Cell
+	public FileWriter getFileWriter() {
+		return fileWriter;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
 	@Override
 	public void visualize(SaveWesteros problem, GOTSearchState state) throws VisualizationException {
 		try {
 			ArrayList<String> locationOfPredicates = new ArrayList<String>();
 			ArrayList<String> whiteWalkerPredicates = new ArrayList<String>();
 			
-			this.fileWriter.write("jonSnow(jonSnow).\n");
-			locationOfPredicates.add(String.format("locationOf(jonSnow, (%s, %s), %s).\n", 
-					state.getLocation().getLeft(), state.getLocation().getRight(), this.stateName));
-			
-			this.fileWriter.write(String.format("dragonGlassCarried(%s, %s).\n",
-					state.getDragonGlassCarried(), this.stateName));
+			this.fileWriter.write(String.format("rowBound(%s).\n", problem.getGridRows() - 1));
+			this.fileWriter.write(String.format("columnBound(%s).\n", problem.getGridColumns() - 1));
 			
 			int whiteWalkerIdx = 0;
 			for(Tuple<Tuple<Integer, Integer>, Boolean> whiteWalkerState : state.getWhiteWalkerStatus()) {
@@ -50,9 +48,6 @@ public class FOLExpGOTVisualizer implements StateVisualizer<SaveWesteros, GOTSea
 						whiteWalkerName, whiteWalkerState.getLeft().getLeft(), 
 						whiteWalkerState.getLeft().getRight()));
 				whiteWalkerPredicates.add(String.format("whiteWalker(%s).\n", whiteWalkerName));
-				if(!whiteWalkerState.getRight())
-					this.fileWriter.write(String.format("alive(%s, %s).\n", 
-							whiteWalkerName, stateName));
 			}
 			
 			for(int i = 0; i < problem.getGridRows(); i++)
@@ -77,11 +72,19 @@ public class FOLExpGOTVisualizer implements StateVisualizer<SaveWesteros, GOTSea
 						obstacleLocation.getLeft(), obstacleLocation.getRight()));
 			}
 			
+			this.fileWriter.write(String.format("maxDragonGlass(%s).\n", problem.getMaxDragonGlass()));
+			
 			for(String locationOf : locationOfPredicates)
 				this.fileWriter.write(locationOf);
 			
 			for(String whiteWalker : whiteWalkerPredicates)
 				this.fileWriter.write(whiteWalker);
+			
+			this.fileWriter.write("allDead(S) :- \n");
+			for(int i = 0; i < whiteWalkerPredicates.size(); i++) {
+				this.fileWriter.write(String.format("\tdead(whiteWalker_%s, S)%s\n", i,
+						i == whiteWalkerPredicates.size() - 1 ? "." : ","));
+			}
 			
 		} catch (IOException e) {
 			throw new VisualizationException(e);
