@@ -3,15 +3,16 @@ package searching.problems;
 import java.util.LinkedList;
 import java.util.Optional;
 import searching.agents.SearchTreeNode;
+import searching.exceptions.VisualizationException;
 
 public class SearchProblemSolution<T extends SearchState, V extends SearchAction> {
 	
 	private final Optional<SearchTreeNode<T, V>> node;
-	private final SearchProblem<T, V> problem;
+	private final SearchProblem<T, V, ?> problem;
 	private final int expandedNodesCount;
 	private final LinkedList<SearchTreeNode<T, V>> nodeSequence;
 	
-	public SearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> node, 
+	public SearchProblemSolution(SearchProblem<T, V, ?> problem, Optional<SearchTreeNode<T, V>> node, 
 			int expandedNodesCount) {
 		this.problem = problem;
 		this.node = node;
@@ -23,7 +24,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return this.node; //goalNode
 	}
 
-	public SearchProblem<T, V> getProblem() {
+	public SearchProblem<T, V, ?> getProblem() {
 		return this.problem;
 	}
 	
@@ -46,28 +47,29 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 		return list;
 	}
 	
-	public void visualizeSolution(boolean actionsOnly, boolean showActionCost) {
+	public void visualizeSolution(boolean actionsOnly, boolean showActionCost) throws VisualizationException {
 		
 		Iterable<SearchTreeNode<T, V>> solution = this.getNodeSequence();
-		solution.forEach(node -> {
-			if(node.getParent().isPresent())
+		for(SearchTreeNode<T, V> node : solution) {
+			if(node.getParent().isPresent()) {
 				this.problem.getVisualizer().visualizeLine(node.getAction().get() +
 						(showActionCost ? ": " + problem.getActionCost(
 						node.getParent().get().getCurrentState(), node.getAction().get()) : ""));
-			
+			}
+				
 			if(!actionsOnly)
 				this.problem.visualize(node.getCurrentState());
-		});
+		}
 	}
 	
-	private void showNode(SearchTreeNode<T, V> node) {
+	private void showNode(SearchTreeNode<T, V> node) throws VisualizationException {
 		if(node.getParent().isPresent())
 			showNode(node.getParent().get());
 		
-		this.problem.getVisualizer().visualizeLine(node.getCurrentState().toString());
+		this.problem.visualize(node.getCurrentState());
 	}
 	
-	public void showNodeSequence() {//sequence of any nodes (not necessarily a solution)
+	public void showNodeSequence() throws VisualizationException {//sequence of any nodes (not necessarily a solution)
 		if(this.node.isPresent()) {
 			showNode(this.node.get());
 		} else {
@@ -81,7 +83,7 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 
 	public static final class FailedSearchProblemSolution<T extends SearchState, V extends SearchAction> 
 			extends SearchProblemSolution<T, V> {
-		public FailedSearchProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
+		public FailedSearchProblemSolution(SearchProblem<T, V, ?> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}
@@ -89,20 +91,20 @@ public class SearchProblemSolution<T extends SearchState, V extends SearchAction
 	
 	public static final class BottomProblemSolution<T extends SearchState, V extends SearchAction> 
 			extends SearchProblemSolution<T, V> {
-		public BottomProblemSolution(SearchProblem<T, V> problem, Optional<SearchTreeNode<T, V>> 
+		public BottomProblemSolution(SearchProblem<T, V, ?> problem, Optional<SearchTreeNode<T, V>> 
 			node, int expandedNodesCount) {
 			super(problem, node, expandedNodesCount);
 		}
 	}
 
 	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> NoSolution(
-			SearchProblem<T, V> problem, int expandedNodesCount) {
+			SearchProblem<T, V, ?> problem, int expandedNodesCount) {
 		return new FailedSearchProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}
 	
 	
 	public static <T extends SearchState, V extends SearchAction> SearchProblemSolution<T, V> Bottom(
-			SearchProblem<T, V> problem, int expandedNodesCount) {
+			SearchProblem<T, V, ?> problem, int expandedNodesCount) {
 		return new BottomProblemSolution<T, V>(problem, Optional.empty(), expandedNodesCount);
 	}
 	

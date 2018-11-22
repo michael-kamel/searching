@@ -1,8 +1,14 @@
 package searching.problems.examples.westeros;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 
 import searching.agents.SearchAgent;
+import searching.exceptions.GameConstructionConstraintsViolation;
+import searching.exceptions.UnknownGameObjectException;
+import searching.exceptions.VisualizationException;
 import searching.problems.SearchProblemSolution;
 import searching.strategies.AStarSearchStrategy;
 import searching.strategies.BreadthFirstSearchStrategy;
@@ -11,22 +17,22 @@ import searching.strategies.GreedySearchStrategy;
 import searching.strategies.IterativeDeepeningSearchStrategy;
 import searching.strategies.SearchStrategy;
 import searching.strategies.UniformCostSearchStrategy;
-import searching.visualizers.ConsoleVisualizer;
-import searching.visualizers.Visualizer;
+import searching.visualizers.ConsoleGOTVisualizer;
+import searching.visualizers.FOLExpGOTVisualizer;
+import searching.visualizers.StateVisualizer;
 
 public class TestSaveWesteros {
 	
 	public static void main(String[] args) {
 		try {
-//			char[][] grid = genGrid(6,6);
+			//char[][] grid = genGrid(4,4);
 			char[][] grid = 
 				{
-						{'O', 'O', 'W', 'W'},
-						{'W', 'O', 'S', '.'},
-						{'.', 'W', '.', '.'},
-						{'W', 'O', '.', 'J'},
+						{'W', 'W', '.'},
+						{'D', '.', 'O'},
+						{'O', '.', 'J'},
 				};
-			search(grid, "AS2", false, 4);
+			genFOLGrid(grid, "/home/mike/dev/prolog/savewesteros.pl", 1);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -38,9 +44,27 @@ public class TestSaveWesteros {
 		search(grid, strategy, visualize, rnd.nextInt(10)+1);
 	}
 	
+	public static void genFOLGrid(char[][] grid, String path, int dragonGlassCapacity) 
+			throws IOException, VisualizationException, GameConstructionConstraintsViolation, UnknownGameObjectException {
+		File KB = new File(path);
+		KB.createNewFile();
+		FileWriter fileWriter = new FileWriter(KB);
+		
+		FOLExpGOTVisualizer folVisualizer = new FOLExpGOTVisualizer(fileWriter);
+		ConsoleGOTVisualizer consoleVisualizer = new ConsoleGOTVisualizer();
+		SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, consoleVisualizer);
+		problem.visualize();
+		System.out.println("Press any key to write KB.");
+		System.in.read();
+		problem.setVisualizer(folVisualizer);
+		problem.visualize();
+		folVisualizer.finalize();
+		System.out.println("KB written successfully");
+	}
+	
 	public static void search(char[][] grid, String strategy, boolean visualize, int dragonGlassCapacity) {
 		try {
-			Visualizer visualizer = new ConsoleVisualizer();
+			StateVisualizer<SaveWesteros, GOTSearchState> visualizer = new ConsoleGOTVisualizer();
 			SaveWesteros problem = new SaveWesteros(grid, dragonGlassCapacity, visualizer);
 			SearchStrategy<GOTSearchState, GOTSearchAction> searchStrategy = getStrategy(problem, strategy);
 			SearchAgent<GOTSearchState, GOTSearchAction> agent = new SearchAgent<GOTSearchState, 
